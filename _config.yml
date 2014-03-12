@@ -1,0 +1,5 @@
+name: Bizzark
+markdown: redcarpet
+pygments: true
+exclude: 
+  - sass/
