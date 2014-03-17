@@ -1,0 +1,14 @@
+{% include head.html %}
+<body class='{{ page.class }}'>
+  <div id='bg'></div>
+  <div id='bgoverlay'></div>
+  <div id='container'>
+    {% include header.html %}
+    <div id='content'>
+      {{ content }}
+    </div><!--/#content-->
+  </div><!--/container-->
+
+{% include analytics.html %}
+</body>
+</html>

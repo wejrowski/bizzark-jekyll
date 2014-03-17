@@ -1,0 +1,11 @@
+---
+layout: post
+title: Dotfiles
+date: 2013-03-25 00:00:00
+---
+
+<p>
+	I decided put my basic dotfiles and vim setup on github and create a way to sync them between my computers. I&#39;ve yet to switch to vim on my personal computer and figured this would be a good time to create a little setup. &nbsp;The setup was mostly inspired by&nbsp;<a href="https://github.com/ryanb/dotfiles">Ryan Bates</a>. In the midst of it I also installed <a href="http://railscasts.com/episodes/308-oh-my-zsh">z shell</a>&nbsp;while I was looking at his. For my personal alias&#39; I was almost going to them in there but decided to keep those separate per computer in my ~/.bash_profile and source it in my .zshrc file.</p>
+<p>
+	You can <a href="https://github.com/wejrowski/dotfiles">checkout my setup on github</a>.</p>
+

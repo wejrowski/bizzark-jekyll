@@ -1,5 +1,9 @@
+url: http://bizzark.com
 name: Bizzark
+author: Brent Wejrowski
 markdown: redcarpet
 pygments: true
 exclude: 
   - sass/
+
+source: source

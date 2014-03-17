@@ -1,3 +1,5 @@
+// sass --watch source/sass/main.sass:source/css/main.css --style compressed
+
 @import 'reset.sass'
 
 $blue: #1380EC
@@ -129,6 +131,7 @@ blockquote
 #nav
   float: left
   text-align: left
+  margin-top: 30px
 
   ul
     list-style: none
@@ -265,6 +268,12 @@ ul.categories li
 //////////// PAGES //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+//posts
+ul.posts
+  .date
+    float: right
+    text-transform: uppercase
+    font-weight: bold
 //home
 #bg
   display: none

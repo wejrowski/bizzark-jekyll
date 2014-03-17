@@ -1,0 +1,20 @@
+---
+layout: bizzark
+title: home
+class: home
+---
+
+<div class="post">
+  <ul class="posts">
+  {% for post in site.posts %}
+    <li>
+      <div class="date">{{ post.date | date_to_string }}</div>
+      <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+    </li>
+  {% endfor %}
+  </ul>
+</div><!-- end post -->
+
+<script src="/javascripts/swfobject.js" type="text/javascript"></script>
+<script src="/javascripts/bg.js" type="text/javascript"></script>
+

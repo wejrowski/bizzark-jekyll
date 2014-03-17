@@ -1,0 +1,10 @@
+---
+layout: post
+title: Migrating to Jekyll
+date: 2014-03-17 00:00:00
+---
+
+<p>
+I decided to move my site from Rackspace to [Jekyll](http://jekyllrb.com). I rarely need to update the code, and static files are much more efficient than running DB calls through my old rails CMS every hit. Jekyll is a static site generator built in Ruby. It has it's own setup conventions for pages and posts. You run a command and, poof--static site files. I'm hosting it on Github so I'll be able to get rid of my Rackspace account and host for free. Pretty nifty system. I'm enjoying it so far. I've also converted my personal Wordpress site over to Jekyll as well.
+<p>
+
