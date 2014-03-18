@@ -1,0 +1,17 @@
+---
+layout: post
+title: Vundle - bundler for vim
+date: 2014-03-17 17:00:00
+---
+
+<p>
+Recently I discovered Vundle–a Bundle like system for VIM. It's pretty nifty. All you need to do is, for any vim plugin you want, add the github repo name and add this to your vimrc:
+
+```
+Bundle 'gituser/reponame'
+```
+
+Then in command mode in vim run **:BundleInstall** and it loads everything in.
+
+I had previously been using Janus, but there is so much going on in there it's hard to track. Vundle is much more customizeable, and makes it extremely easy to add/remove and experiment with new plugins quickly.
+<p>
