@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quick Ruby scripts</title>
+  <meta content='Bizzark is a Scottsdale Arizona based website design and development company.' name='description'>
+  <meta content='website development, arizona website development, arizona web developer, arizona web development company' name='keywords'>
+  <link href='http://www.bizzark.com/blog.xml' rel='alternate' title='Bizzark Blog Feed' type='application/rss+xml'>
+  <link href='/favicon.png' rel='icon' type='image/png'>
+
+  <link rel="stylesheet" href="/css/main.css">
+
+  <script>
+   var styleNode = document.createElement('style');
+   styleNode.type = "text/css";
+   css = "body{ background: #d5d5d5 url(\"/images/bg" + (Math.floor((Math.random()*4)+1)) +".png\") no-repeat top left; background-attachment:fixed;}";
+   
+
+   // browser detection (based on prototype.js)
+   if(!!(window.attachEvent && !window.opera)) {
+      styleNode.styleSheet.cssText = css;
+   } else {
+      var styleText = document.createTextNode(css);
+      styleNode.appendChild(styleText);
+   }
+   document.getElementsByTagName('head')[0].appendChild(styleNode);
+  </script>
+
+  <script src='//use.typekit.net/ztt1pbp.js' type='text/javascript'></script>
+  <script>
+    //<![CDATA[
+      try{Typekit.load();}catch(e){}
+    //]]>
+  </script>
+</head>
+
+<body class=''>
+  <div id='bg'></div>
+  <div id='bgoverlay'></div>
+  <div id='container'>
+        <div id='header'>
+      <div id='words'>
+        <h1>RUBY HTML WWW</h1>
+        <h2>ZEROS AND ONES FROM BRENT WEJROWSKI</h2>
+      </div>
+      <div id='logo'><h1><a href="/">BIZZARK</a></h1></div>
+      <div id='nav'>
+        <h1 class='nav '><a href="/">BLOG</a></h1>
+        <h1 class='nav '><a href="/about.html">ABOUT</a></h1>
+      </div>
+    </div><!--/#header-->
+
+    <div id='content'>
+      <h1 class="header-banner">Quick Ruby scripts</h1>
+<div class="top-back">
+  <a href="/">&larr; Back to Blogs</a>
+</div>
+<div class="post-date">
+  17 March 2013
+</div>
+<p>
+    I&#39;ve been attempting to more frequently write little fun scripts to help with tasks. A while back I learned about the __END__ keyword and DATA. In a ruby file, anything after __END__ becomes a comment. And each line is stored in a variable DATA. You can use this to do some pretty cool things. I&#39;ve been using it to parse random strings.&nbsp;</p>
+
+<p>
+    Recently I needed to verify that all the images referenced css files were correct. I created this little script where I could paste my css in the file after __END__, &nbsp;parse out each instance of url(&#39;xyz&#39;), and save them as &lt;img src=&quot;xyz&quot;&gt; to a new html file where I can open and see whether they&#39;re all loading or not. &nbsp;And with a bunch of css files all I had to do was paste the css, run the file, and refresh my page.&nbsp;</p>
+
+<script src="https://gist.github.com/wejrowski/5183874.js"></script>
+
+
+  <div class="post-footer">
+    <div class="comments-num"><a href="/<%= @page.slug %>#disqus_thread">Comments (View)</a></div>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    function getDisqusEmbed(){
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = 'http://bizzark-web-development.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    } (function() {
+      setTimeout("getDisqusEmbed()", 50);  
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=bizzark-web-development">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </div><!--/#content-->
+  </div><!--/container-->
+
+<script>
+  //<![CDATA[
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  //]]>
+</script>
+<script>
+  //<![CDATA[
+    try{ var pageTracker = _gat._getTracker("UA-5643858-1"); pageTracker._trackPageview(); } catch(err) {}
+  //]]>
+</script>
+
+</body>
+</html>

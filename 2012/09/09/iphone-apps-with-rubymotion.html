@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>iPhone apps with RubyMotion</title>
+  <meta content='Bizzark is a Scottsdale Arizona based website design and development company.' name='description'>
+  <meta content='website development, arizona website development, arizona web developer, arizona web development company' name='keywords'>
+  <link href='http://www.bizzark.com/blog.xml' rel='alternate' title='Bizzark Blog Feed' type='application/rss+xml'>
+  <link href='/favicon.png' rel='icon' type='image/png'>
+
+  <link rel="stylesheet" href="/css/main.css">
+
+  <script>
+   var styleNode = document.createElement('style');
+   styleNode.type = "text/css";
+   css = "body{ background: #d5d5d5 url(\"/images/bg" + (Math.floor((Math.random()*4)+1)) +".png\") no-repeat top left; background-attachment:fixed;}";
+   
+
+   // browser detection (based on prototype.js)
+   if(!!(window.attachEvent && !window.opera)) {
+      styleNode.styleSheet.cssText = css;
+   } else {
+      var styleText = document.createTextNode(css);
+      styleNode.appendChild(styleText);
+   }
+   document.getElementsByTagName('head')[0].appendChild(styleNode);
+  </script>
+
+  <script src='//use.typekit.net/ztt1pbp.js' type='text/javascript'></script>
+  <script>
+    //<![CDATA[
+      try{Typekit.load();}catch(e){}
+    //]]>
+  </script>
+</head>
+
+<body class=''>
+  <div id='bg'></div>
+  <div id='bgoverlay'></div>
+  <div id='container'>
+        <div id='header'>
+      <div id='words'>
+        <h1>RUBY HTML WWW</h1>
+        <h2>ZEROS AND ONES FROM BRENT WEJROWSKI</h2>
+      </div>
+      <div id='logo'><h1><a href="/">BIZZARK</a></h1></div>
+      <div id='nav'>
+        <h1 class='nav '><a href="/">BLOG</a></h1>
+        <h1 class='nav '><a href="/about.html">ABOUT</a></h1>
+      </div>
+    </div><!--/#header-->
+
+    <div id='content'>
+      <h1 class="header-banner">iPhone apps with RubyMotion</h1>
+<div class="top-back">
+  <a href="/">&larr; Back to Blogs</a>
+</div>
+<div class="post-date">
+  9 September 2012
+</div>
+<p>
+    I just purchased a copy of <a href="http://www.rubymotion.com/">Rubymotion</a> a few weeks ago. RubyMotion allows you to build full iPhone apps using... Ruby. &nbsp;The founder was a former Apple developer who&#39;s sole project was MacRuby, who had left Apple to make RubyMotion his full time project. &nbsp;RubyMotion gives you direct access to the iPhone&#39;s Objective-C API, and compiles the app to native binary, allowing it to be a legitimate iPhone app with no performance drawbacks (e.g.&nbsp;<a href="http://phonegap.com/">PhoneGap</a>).&nbsp;I was convinced, after reading <a href="http://iconoclastlabs.com/cms/blog/posts/phonegap-vs-rubymotion">this article</a>&nbsp;about PhoneGap vs Rubymotion to give it a try. Also, just knowing who built it and everyone who supports it convinces me. <a href="http://rubyrogues.com/055-rr-rubymotion-with-laurent-sansonetti/">Here&#39;s an interview</a> with the creator.</p>
+
+<p>
+    It will be a fun challenge to program with Ruby outside the usual Rails world I&#39;m in every day. While learning the ins and outs of iPhone development I&#39;ll be putting together the basic interface for an app idea I&#39;ve had for a while.</p>
+
+<p>
+    It&#39;s amazingly easy to build apps. Type &quot;rake&quot; in the command line and.. bada bing bada boom--an iPhone plops onto your screen and you&#39;re playing with the app (albeit a blank black screen if you haven&#39;t done anything yet). You even have the console to interactive with the app in runtime (something you can&#39;t do when developing normal Objective-C / XCode projects). A few weekends and a hand full of hours later, I was able to create some basic navigation with different screens. The below is a series of 4 screens I built to allow you to edit an object I&#39;m calling a &quot;Stack.&quot; You can add/delete ones, create a new one and edit a couple Stack settings. Took me a while to make everything look pretty. My favorite part is the very subtle gradient on the bottom of the rows on the first screen (and on the top when you drag it down.. like the Clock app).</p>
+
+<p>
+    &nbsp;</p>
+
+<p>
+    <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone1.jpg" style="width: 368px;height:697px;" /> <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone2.jpg" style="width: 368px;height:697px;" /> <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone3.jpg" style="width: 368px;height:697px;" /> <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone6.jpg" style="width: 368px;height:697px;" /></p>
+
+<style type="text/css">body{background: #ffffff!important}</style>
+
+
+  <div class="post-footer">
+    <div class="comments-num"><a href="/<%= @page.slug %>#disqus_thread">Comments (View)</a></div>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    function getDisqusEmbed(){
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = 'http://bizzark-web-development.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    } (function() {
+      setTimeout("getDisqusEmbed()", 50);  
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=bizzark-web-development">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </div><!--/#content-->
+  </div><!--/container-->
+
+<script>
+  //<![CDATA[
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  //]]>
+</script>
+<script>
+  //<![CDATA[
+    try{ var pageTracker = _gat._getTracker("UA-5643858-1"); pageTracker._trackPageview(); } catch(err) {}
+  //]]>
+</script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Migrating to Jekyll</title>
+  <meta content='Bizzark is a Scottsdale Arizona based website design and development company.' name='description'>
+  <meta content='website development, arizona website development, arizona web developer, arizona web development company' name='keywords'>
+  <link href='http://www.bizzark.com/blog.xml' rel='alternate' title='Bizzark Blog Feed' type='application/rss+xml'>
+  <link href='/favicon.png' rel='icon' type='image/png'>
+
+  <link rel="stylesheet" href="/css/main.css">
+
+  <script>
+   var styleNode = document.createElement('style');
+   styleNode.type = "text/css";
+   css = "body{ background: #d5d5d5 url(\"/images/bg" + (Math.floor((Math.random()*4)+1)) +".png\") no-repeat top left; background-attachment:fixed;}";
+   
+
+   // browser detection (based on prototype.js)
+   if(!!(window.attachEvent && !window.opera)) {
+      styleNode.styleSheet.cssText = css;
+   } else {
+      var styleText = document.createTextNode(css);
+      styleNode.appendChild(styleText);
+   }
+   document.getElementsByTagName('head')[0].appendChild(styleNode);
+  </script>
+
+  <script src='//use.typekit.net/ztt1pbp.js' type='text/javascript'></script>
+  <script>
+    //<![CDATA[
+      try{Typekit.load();}catch(e){}
+    //]]>
+  </script>
+</head>
+
+<body class=''>
+  <div id='bg'></div>
+  <div id='bgoverlay'></div>
+  <div id='container'>
+        <div id='header'>
+      <div id='words'>
+        <h1>RUBY HTML WWW</h1>
+        <h2>ZEROS AND ONES FROM BRENT WEJROWSKI</h2>
+      </div>
+      <div id='logo'><h1><a href="/">BIZZARK</a></h1></div>
+      <div id='nav'>
+        <h1 class='nav '><a href="/">BLOG</a></h1>
+        <h1 class='nav '><a href="/about.html">ABOUT</a></h1>
+      </div>
+    </div><!--/#header-->
+
+    <div id='content'>
+      <h1 class="header-banner">Migrating to Jekyll</h1>
+<div class="top-back">
+  <a href="/">&larr; Back to Blogs</a>
+</div>
+<div class="post-date">
+  17 March 2014
+</div>
+<p><p>
+I decided to move my site from Rackspace to <a href="http://jekyllrb.com">Jekyll</a>. I rarely need to update the code, and static files are much more efficient than running DB calls through my old rails CMS every hit. Jekyll is a static site generator built in Ruby. It has it&#39;s own setup conventions for pages and posts. You run a command and, poof--static site files. I&#39;m hosting it on Github so I&#39;ll be able to get rid of my Rackspace account and host for free. Pretty nifty system. I&#39;m enjoying the workflow so far. I&#39;ve also converted my personal Wordpress site over to Jekyll as well so I&#39;ll be using it quite a bit.</p>
+
+<p>This will be the third version of this site (see the original 2008 version <a href="http://bizzark1.bizzark.com">here</a>. The first was a fun flash design, the second was using a custom rails CMS I used for myself and clients, and now Jekyll---same basic design I just removed some old pages and simplified the home page.
+<p></p>
+
+
+  <div class="post-footer">
+    <div class="comments-num"><a href="/<%= @page.slug %>#disqus_thread">Comments (View)</a></div>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    function getDisqusEmbed(){
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = 'http://bizzark-web-development.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    } (function() {
+      setTimeout("getDisqusEmbed()", 50);  
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=bizzark-web-development">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </div><!--/#content-->
+  </div><!--/container-->
+
+<script>
+  //<![CDATA[
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  //]]>
+</script>
+<script>
+  //<![CDATA[
+    try{ var pageTracker = _gat._getTracker("UA-5643858-1"); pageTracker._trackPageview(); } catch(err) {}
+  //]]>
+</script>
+
+</body>
+</html>
