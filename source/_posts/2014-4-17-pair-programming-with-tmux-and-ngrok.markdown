@@ -8,7 +8,8 @@ My team has been playing with the idea of remote programming and what that
 would look like, especially for longer periods of time (e.g. remoting from
 Germany for a month or two =). In the office, we don't often pair
 program unless we need some feedback or want to check out each other's code.
-When remoting, it's a bit more difficult to do that.
+Despite not paring very often, I thought I'd look into some options in case the 
+time came.
 
 Now, you could use something like Join.me and screen share. But (1) that's just
 not very cool. And (2) It can be slow and glitchy. Our entire team uses VIM now,
