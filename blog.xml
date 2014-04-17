@@ -1,0 +1,734 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[]]></title>
+  <link href="http://bizzark.com/blog.xml" rel="self"/>
+  <link href="http://bizzark.com/"/>
+  <updated>2014-04-17T14:26:25-07:00</updated>
+  <id>http://bizzark.com/</id>
+  <author>
+    <name><![CDATA[Brent Wejrowski]]></name>
+  </author>
+  
+  <entry>
+    <title type="html"><![CDATA[SSH pairing tunnels with Tmux and ngrok]]></title>
+    <link href="http://bizzark.com/2014/04/17/pair-programming-with-tmux-and-ngrok.html"/>
+    <updated>2014-04-17T11:30:00Z</updated>
+    <id>http://bizzark.com/2014/04/17/pair-programming-with-tmux-and-ngrok</id>
+    <content type="html"><![CDATA[<p>My team has been playing with the idea of remote programming and what that
+would look like, especially for longer periods of time (e.g. remoting from
+Germany for a month or two =). In the office, we don&#39;t often pair
+program unless we need some feedback or want to check out each other&#39;s code.
+When remoting, it&#39;s a bit more difficult to do that.</p>
+
+<p>Now, you could use something like Join.me and screen share. But (1) that&#39;s just
+not very cool. And (2) It can be slow and glitchy. Our entire team uses VIM now,
+so I thought I&#39;d try out session sharing with something like tmux. After
+installing a couple items you can get up and running in no time, sharing a
+terminal window at lightning speed. Here was my process to get this up and
+running (I&#39;m using OSX here).</p>
+
+<h1>1. Install Tmux</h1>
+
+<p>Tmux allows you to manage multiple terminal windows into one, almost like using
+vim splits. You can also share sessions with it, which is what I&#39;ll be using it
+for.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ brew install tmux
+</code></pre></div>
+<h1>2. Authorize users with github</h1>
+
+<p>You&#39;ll need to allow users to ssh into your machine. Instead of giving them my
+password or creating a user for them, I&#39;m going to use their ssh key. You
+can set it up manually, or for Github users there&#39;s a nifty gem for that.
+Github apparently stores all the public keys you add to it... publically
+(github.com/username.keys). The <a href="https://github.com/chrishunt/github-auth">gh-auth gem</a>.
+makes use of this so we can add and remove user keys super easily.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ gem install github-auth
+</code></pre></div>
+<p>Auth a user to your machine and set them up to automatically join your tmux
+session when they login, which we&#39;ll name &quot;pairing.&quot;</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ gh-auth add --users=&quot;username&quot; --command=&quot;$(which tmux) attach -s pairing&quot;
+</code></pre></div>
+<p>BTW to view and remove users you can simply run:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ gh-auth list
+$ gh-auth remove --users=username
+</code></pre></div>
+<p>This will give them access to your normal user, you could create a new user
+with different privileges. I&#39;m simply creating an
+<a href="http://osxdaily.com/2011/05/22/setup-user-name-alias-mac/">alias</a> for my user,
+with the username tmux.</p>
+
+<h2>3. Ngrok</h2>
+
+<p>Unless you want to setup a server for this and put your code up there, SSHing
+into your localhost can be a bit tricky. <a href="https://ngrok.com/">Ngrok</a> is a
+nifty, open source project (see <a href="https://github.com/inconshreveable/ngrok">ngrok on gihub</a>)
+that basically acts as a proxy to your machine. You can install it on a
+server yourself, or use ngrok.com.</p>
+
+<p>To use ngrok.com&#39;s service, all you have to do is, after downloading it, run
+this first line:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ ./ngrok -proto=tcp 22
+
+ngrok                                              (Ctrl+C to quit)
+Tunnel Status                 online
+Version                       1.6/1.5
+Forwarding                    tcp://ngrok.com:35437 -&gt; 127.0.0.1:22
+Web Interface                 127.0.0.1:4040
+# Conn                        0
+Avg Conn Time                 0.00ms
+</code></pre></div>
+<p>That&#39;ll work for SSHing, and It&#39;ll give you a random port to connect to. Also,
+if for instance you had a rails server running on port 3000, you could expose
+it with ngrok and get a random subdomain on ngrok.com to connect to by running: </p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ ./ngrok 3000
+
+ngrok                                                      (Ctrl+C to quit)
+Tunnel Status                 online
+Version                       1.6/1.5
+Forwarding                    http://3117bccc.ngrok.com -&gt; 127.0.0.1:3000
+Forwarding                    https://3117bccc.ngrok.com -&gt; 127.0.0.1:3000
+Web Interface                 127.0.0.1:4040
+# Conn                        0
+Avg Conn Time                 0.00ms
+</code></pre></div>
+<p><strong>Note:</strong> I&#39;ve seen a number of people talk about and use ngrok.com. Ultimately
+who knows what happens on his server, or his executable! Seeing that he has a 
+number of largely followed projects, I&#39;ve seen a number of big companies mention
+it, and all I&#39;m really sending is bits of encrypted code back and forth, I&#39;m
+going to trust him... for now.</p>
+
+<h2>4. Pair</h2>
+
+<p>Now, to set it all up, after starting ngrok, start your tmux session</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ tmux new -s pairing
+</code></pre></div>
+<p>And then simply have your friend connect via ssh to the ngrok server and port
+number ngrok gave you.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ssh youruser@ngrok.com -p 12345
+</code></pre></div>
+<p>and viol&agrave;!</p>
+
+<p>You can kill the tmux session with <strong>tmux kill-server</strong>, shut
+down ngrok with ctrl+c, and then remove the user&#39;s keys with gh-auth . Just
+make sure you trust the person on the other end... and re-iterate to your
+co-workers NOT to goof around and type something stupid...   ever.</p>
+
+<p>There&#39;s also <a href="https://github.com/zolrath/wemux">wemux</a> which you can setup
+read-only modes and has a few other nifty features. I may try to setup another
+user with restricted access.</p>
+
+<p>c.f.</p>
+
+<ul>
+<li><a href="https://coderwall.com/p/pcrr4w">https://coderwall.com/p/pcrr4w</a>,</li>
+<li><a href="http://iamvery.com/2013/11/16/tmux-pairing-anywhere-on-your-box.html">http://iamvery.com/2013/11/16/tmux-pairing-anywhere-on-your-box.html</a></li>
+</ul>
+
+<p><strong>PS Note on vim colors:</strong> I had some troubles with getting colors to work with tmux. 
+You have to make sure tmux is using 256 colors. I have a bash alias for this:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text"># vim colors in tmux. c.f. http://stackoverflow.com/questions/10158508/lose-vim-colorscheme-in-tmux-mode
+alias tmux=&quot;TERM=screen-256color-bce tmux&quot;                                      
+</code></pre></div>
+<p>And then in ~/.tmux.conf</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">set -g default-terminal &quot;xterm-256color&quot;
+</code></pre></div>]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Martin Fowler - Principles of Refactoring]]></title>
+    <link href="http://bizzark.com/2014/04/15/when-to-refactor.html"/>
+    <updated>2014-04-15T15:30:00Z</updated>
+    <id>http://bizzark.com/2014/04/15/when-to-refactor</id>
+    <content type="html"><![CDATA[<p>I am reading through Martin Fowler&#39;s Refactoring right now and thought I&#39;d share some bits and pieces as I&#39;m going through. His second chapter is entitled, &quot;Principles of Refactoring&quot; where he shares the when and why to refactoring along with a few basic principles.</p>
+
+<h2>Why Refactor?</h2>
+
+<p>Ultimately, he says, refactoring allows you to develop much faster. When you refactor---when you develop the habit of making code easier to understand, by breaking things down into simpler chunks, simply renaming things, or changing structure to help it make more sense (etc)---your code becomes much easier to understand, enabling you to develop more quickly. It can be a hard sell at first when things seem overwhelming, but I think one of the greatest principles to that which he shares is that refactoring should be done in small chunks over time. And, in many projects it will create more work up front, but that will in almost all cases, he says, speed things up in the end. Refactoring now seems to be a pretty well accepted practice in most circles. Apparently when he first came across the idea from Bill Opdyke in 1992 he says, <em>I remember thinking, &quot;Interesting, but not really that important.&quot; Boy was I wrong!</em> </p>
+
+<h2>Two Hats</h2>
+
+<p>One principle he starts off with is what he calls &quot;two hats.&quot; Think of wearing two hats while you program. One is when refactoring, where you add no new functionality, you only restructure it. You should have full test coverage beforehand and not be changing or adding any new tests while refactoring. The other hat is for adding new function, where you only add new capabilities, you don&#39;t change existing code. If you&#39;re adding something new and come across something which would be helpful if it were restructured, swap hats, refactor, then swap back and keep going.</p>
+
+<h2>When should you refactor?</h2>
+
+<p>For starters Martin says in almost all cases he is opposed to setting aside time for refactoring, especially scheduled time. It should be a thing you do all the time, in small chunks.</p>
+
+<p><strong>Refactor duplication the third time you see it.</strong>  When you do something for the first time, just do it. If you do it again, take note of the duplication and do it anyway. If you do it a third time, then refactor. <a href="http://blog.codeclimate.com/blog/2014/01/09/when-is-it-time-to-refactor/">I&#39;ve also heard this elsewhere</a> in relation to finding something that needs refactoring. If you find a problem that bothers you or needs refactoring, leave it once, twice, and three times refactor it.</p>
+
+<p><strong>When you fix a bug.</strong> Refactoring here can be a helpful way of understanding code. If you come across something that doesn&#39;t make sense, make some small tweaks to make it be more understandable. Bugs, he says, are often a sign refactoring is needed since the code was not clear enough in the first place to see that there was a bug.</p>
+
+<p><strong>When you code review.</strong> <a href="http://blog.codinghorror.com/code-reviews-just-do-it">Code reviews</a> are one of the greatest ways to improve code. The more I&#39;ve done code reviews the more I&#39;ve seen how helpful it is to not only understand other people&#39;s code, but understand how they&#39;re reading it---what makes sense, what&#39;s confusing etc---which is really helpful for refactoring. And often times it&#39;s as simple as adding a method or renaming a few variables. It can, at times, be difficult to do during code reviews, especially if it would push back a deadline. We often will refactor if it&#39;s a dealbreaker for two or more teammates. If not, or otherwise, we will note our thoughts, and if we have time we&#39;ll change them, otherwise we&#39;ll merge the code and refactor later. More recently our team has been doing more daily code reviews and github pull requests which has given us a lot more opportunity and time to catch things as they come rather than what we did before, which was reviewing once every one or two weeks.</p>
+
+<h2>When not to refactor</h2>
+
+<p><strong>When code is just too messy.</strong> If it would simply be easier to rewrite the code, do it. A clear sign of this is when the code simply does not work or you cannot stabilize it. Code must be working correctly before refactoring it (and ideally have working tests beforehand).</p>
+
+<p><strong>Deadlines.</strong> Interestingly, but practically, he says don&#39;t refactor close to a deadline. If the productivity gain would only appear after the deadline, wait. You can then think of it as a debt to manage later, and hopefully sooner and more well managed.</p>
+
+<p>Other than that he says you should not put it off simply because you do not have time---which, he says, is often a sign that you need to refactor!</p>
+
+<h2>Performance</h2>
+
+<p>One last interesting bit I&#39;ll share from this chapter is on Performance and refactoring. He was pretty adamant that you should not worry about performance when refactoring. Paying constant attention to this is a common approach, he says, but more often than not it is not affective and does not even work. The changes often make code harder to work with and make development slow. And, ultimately, often times these minor adjustments do not result in quicker software. His approach is to develop and refactor, and at a later stage worry about performance. When you have more well refactored code you can often fine tune performance more easily. Not only that but you can find and work with the problems much quicker. If you use a performance tool you can find hot spots and then fine tune those areas themselves, the small areas where 90% of the issues come from.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vundle - bundler for vim]]></title>
+    <link href="http://bizzark.com/2014/03/17/vundle.html"/>
+    <updated>2014-03-17T17:00:00Z</updated>
+    <id>http://bizzark.com/2014/03/17/vundle</id>
+    <content type="html"><![CDATA[<p><p>
+Recently I discovered Vundle–a Bundle like system for VIM. It&#39;s pretty nifty. All you need to do is, for any vim plugin you want, add the github repo name and add this to your vimrc:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Bundle &#39;gituser/reponame&#39;
+</code></pre></div>
+<p>Then in command mode in vim run <strong>:BundleInstall</strong> and it loads everything in.</p>
+
+<p>I had previously been using Janus, but there is so much going on in there it&#39;s hard to track. Vundle is much more customizeable, and makes it extremely easy to add/remove and experiment with new plugins quickly.
+<p></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Migrating to Jekyll]]></title>
+    <link href="http://bizzark.com/2014/03/17/jekyll.html"/>
+    <updated>2014-03-17T00:00:00Z</updated>
+    <id>http://bizzark.com/2014/03/17/jekyll</id>
+    <content type="html"><![CDATA[<p><p>
+I decided to move my site from Rackspace to <a href="http://jekyllrb.com">Jekyll</a>. I rarely need to update the code, and static files are much more efficient than running DB calls through my old rails CMS every hit. Going lean and green. Jekyll is a static site generator built in Ruby. It has it&#39;s own setup conventions for pages and posts. You run a command and, poof--static site files. I&#39;m hosting it on Github so I&#39;ll be able to get rid of my Rackspace account and host for free. Pretty nifty system. I&#39;m enjoying the workflow so far. I&#39;ve also converted my personal Wordpress site over to Jekyll as well so I&#39;ll be using it quite a bit.</p>
+
+<p>This will be the third version of this site (see the original 2008 version <a href="http://bizzark1.bizzark.com">here</a>. The first was a fun flash design, the second was using a custom rails CMS I used for myself and clients, and now Jekyll---same basic design I just removed some old pages and simplified the home page.
+<p></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Dotfiles]]></title>
+    <link href="http://bizzark.com/2013/03/25/dotfiles.html"/>
+    <updated>2013-03-25T00:00:00Z</updated>
+    <id>http://bizzark.com/2013/03/25/dotfiles</id>
+    <content type="html"><![CDATA[<p>
+    I decided put my basic dotfiles and vim setup on github and create a way to sync them between my computers. I&#39;ve yet to switch to vim on my personal computer and figured this would be a good time to create a little setup. &nbsp;The setup was mostly inspired by&nbsp;<a href="https://github.com/ryanb/dotfiles">Ryan Bates</a>. In the midst of it I also installed <a href="http://railscasts.com/episodes/308-oh-my-zsh">z shell</a>&nbsp;while I was looking at his. For my personal alias&#39; I was almost going to them in there but decided to keep those separate per computer in my ~/.bash_profile and source it in my .zshrc file.</p>
+
+<p>
+    You can <a href="https://github.com/wejrowski/dotfiles">checkout my setup on github</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Quick Ruby scripts]]></title>
+    <link href="http://bizzark.com/2013/03/17/quick-ruby-scripts.html"/>
+    <updated>2013-03-17T00:00:00Z</updated>
+    <id>http://bizzark.com/2013/03/17/quick-ruby-scripts</id>
+    <content type="html"><![CDATA[<p>
+    I&#39;ve been attempting to more frequently write little fun scripts to help with tasks. A while back I learned about the __END__ keyword and DATA. In a ruby file, anything after __END__ becomes a comment. And each line is stored in a variable DATA. You can use this to do some pretty cool things. I&#39;ve been using it to parse random strings.&nbsp;</p>
+
+<p>
+    Recently I needed to verify that all the images referenced css files were correct. I created this little script where I could paste my css in the file after __END__, &nbsp;parse out each instance of url(&#39;xyz&#39;), and save them as &lt;img src=&quot;xyz&quot;&gt; to a new html file where I can open and see whether they&#39;re all loading or not. &nbsp;And with a bunch of css files all I had to do was paste the css, run the file, and refresh my page.&nbsp;</p>
+
+<script src="https://gist.github.com/wejrowski/5183874.js"></script>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DHH - Abstracted Ideals]]></title>
+    <link href="http://bizzark.com/2012/10/26/dhh-abstracted-ideals.html"/>
+    <updated>2012-10-26T00:00:00Z</updated>
+    <id>http://bizzark.com/2012/10/26/dhh-abstracted-ideals</id>
+    <content type="html"><![CDATA[<p>
+    There was a great interview with <a href="http://david.heinemeierhansson.com/">DHH</a> on the <a href="http://rubyrogues.com/056-rr-david-heinemeier-hansson/">RubyRogues podcast</a>. The guys on the podcast very much enjoy talking about abstract Ruby programming ideals and this episode they got into a long conversation/argument about the downside of this exact thing. DHH kept making the point that talking about lofty ideas, and attempting to write the best code possible for the sake of some ideal or because you think it will be more adaptable in the future is a waste. Lofty philisophical talk has no value unless it actually produces something with worth. And all the philisophical talk just abstracts you from the actual code. It&#39;s pretty humorous to hear him talk compared to most of the conversations on the show. I really enjoyed it because (1) I&#39;ve seen myself fall into this and waste time attempting to fit code into some principle or making code fit all possible scenarios, and&nbsp;(2) even regardless to code, lofty philisophical conversations happen every day about all sorts of topics that are in reality.. probably irrelivent to the real world.&nbsp;</p>
+
+<p>
+    A few quotes I enjoyed:</p>
+
+<blockquote>
+    <p>
+        <i><strong>Never</strong> try to write code that you think will do better for something in the future. It&#39;s guesswork and you will never know.&nbsp;</i></p>
+    <p>
+        <i>It&#39;s easy to talk about lofty OOP principles--easy to convince someone about Law of Demeter--code will be so much more maintainable etc. etc. As long as you explain it in a very abstract way, it&#39;s incredibly convincing.</i></p>
+    <p>
+        <i>&quot;Maintainable&quot; is such a wiesal word.</i></p>
+    <p>
+        <i>Design questions.. I find to be an uninteresting domain. I generally don&#39;t care about these discussions until you produce code.</i></p>
+</blockquote>
+
+<p>
+    If you haven&#39;t heard him speak before you should check him out. He has a great video from a talk he did at Standford called <a href="http://ecorner.stanford.edu/authorMaterialInfo.html?mid=2351">unlearn your MBA</a>&nbsp;which is fantastic.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Triangles and Unicorns]]></title>
+    <link href="http://bizzark.com/2012/09/23/triangles-and-unicorns.html"/>
+    <updated>2012-09-23T00:00:00Z</updated>
+    <id>http://bizzark.com/2012/09/23/triangles-and-unicorns</id>
+    <content type="html"><![CDATA[<p>
+    Time for an upgrade. I decided it was time to stop running my rails site on my old Apache servers and move them over to modernity. Which means Rackspace + nginx + unicorn. Typically I&#39;ve been deploying new rails apps with Passenger and nginx/Apache. I decided to try our Unicorn to get some experience with it. Plus the name is cool. Plus Github uses it. And now I can finally say my site is run by unicorns.&nbsp;</p>
+
+<p>
+    In addition to the unicorns, I did a bit of a redesign. I was just going to do a bit of a re-write to gear this more towards myself as a developer, instead of promoting the LLC. But, one thing led to another and I decided it was time to clean some things up. I upgraded from Rails 2.3.10 to 3.2.8, added some new Capistrano wizardry, changed some of the layouts to use HAML, and switched over to SASS to manage the CSS. Oh, and I also moved to TypeKit to make better use of Futura (my fav).&nbsp;</p>
+
+<p>
+    The home page is a bit of a throwback to my <a href="http://bizzark1.bizzark.com">original Bizzark website</a> I built back in 2008. It was a small Actionscript masterpiece. That was the first time I made use of triginomotry in the real world. Some practical applications of that goofy sin/cos/tan junk you learn in Highschool and never understood why (<a href="http://github.com/wejrowski/bizzark_3d/">checkout the code on github</a>). People who make 3d engines must be true math wizards.&nbsp;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iPhone apps with RubyMotion]]></title>
+    <link href="http://bizzark.com/2012/09/09/iphone-apps-with-rubymotion.html"/>
+    <updated>2012-09-09T00:00:00Z</updated>
+    <id>http://bizzark.com/2012/09/09/iphone-apps-with-rubymotion</id>
+    <content type="html"><![CDATA[<p>
+    I just purchased a copy of <a href="http://www.rubymotion.com/">Rubymotion</a> a few weeks ago. RubyMotion allows you to build full iPhone apps using... Ruby. &nbsp;The founder was a former Apple developer who&#39;s sole project was MacRuby, who had left Apple to make RubyMotion his full time project. &nbsp;RubyMotion gives you direct access to the iPhone&#39;s Objective-C API, and compiles the app to native binary, allowing it to be a legitimate iPhone app with no performance drawbacks (e.g.&nbsp;<a href="http://phonegap.com/">PhoneGap</a>).&nbsp;I was convinced, after reading <a href="http://iconoclastlabs.com/cms/blog/posts/phonegap-vs-rubymotion">this article</a>&nbsp;about PhoneGap vs Rubymotion to give it a try. Also, just knowing who built it and everyone who supports it convinces me. <a href="http://rubyrogues.com/055-rr-rubymotion-with-laurent-sansonetti/">Here&#39;s an interview</a> with the creator.</p>
+
+<p>
+    It will be a fun challenge to program with Ruby outside the usual Rails world I&#39;m in every day. While learning the ins and outs of iPhone development I&#39;ll be putting together the basic interface for an app idea I&#39;ve had for a while.</p>
+
+<p>
+    It&#39;s amazingly easy to build apps. Type &quot;rake&quot; in the command line and.. bada bing bada boom--an iPhone plops onto your screen and you&#39;re playing with the app (albeit a blank black screen if you haven&#39;t done anything yet). You even have the console to interactive with the app in runtime (something you can&#39;t do when developing normal Objective-C / XCode projects). A few weekends and a hand full of hours later, I was able to create some basic navigation with different screens. The below is a series of 4 screens I built to allow you to edit an object I&#39;m calling a &quot;Stack.&quot; You can add/delete ones, create a new one and edit a couple Stack settings. Took me a while to make everything look pretty. My favorite part is the very subtle gradient on the bottom of the rows on the first screen (and on the top when you drag it down.. like the Clock app).</p>
+
+<p>
+    &nbsp;</p>
+
+<p>
+    <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone1.jpg" style="width: 368px;height:697px;" /> <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone2.jpg" style="width: 368px;height:697px;" /> <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone3.jpg" style="width: 368px;height:697px;" /> <img alt="" src="http://bizzark.com/images/attachments/page_58/iphone6.jpg" style="width: 368px;height:697px;" /></p>
+
+<style type="text/css">body{background: #ffffff!important}</style>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[It's been a while]]></title>
+    <link href="http://bizzark.com/2012/09/03/it-s-been-a-while.html"/>
+    <updated>2012-09-03T00:00:00Z</updated>
+    <id>http://bizzark.com/2012/09/03/it-s-been-a-while</id>
+    <content type="html"><![CDATA[<p>
+    Ja, ich habe etwas nicht in eine weile hier getan. That&#39;s german for I haven&#39;t done anything here in a while (...and I&#39;m learning German). We&#39;ll see where the German thing goes&mdash;and this blog post / website for that matter. Shortly after I revamped and rethought this website for frelance business I started doing more contract work and moved into full time positions. I didn&#39;t keep close attention to the website after that since I didn&#39;t want to draw many people to it (wasn&#39;t looking for more freelance).&nbsp;</p>
+
+<p class="p2">
+    That said, at some point I should rework the website to be less geared towards that, and more geared towards what I&#39;m doing as a programmer, wherever I&#39;m at. So, for the time being, I may touch base every so often just to give some insight into the zeros and ones in my brain (or the programming side of my thought life).&nbsp;</p>
+
+<p class="p1">
+    Sprechen Ihnen bald (talk to you soon)!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Rails refactoring fun - looking at old code]]></title>
+    <link href="http://bizzark.com/2012/02/17/rails-refactoring-fun-looking-at-old-code.html"/>
+    <updated>2012-02-17T00:00:00Z</updated>
+    <id>http://bizzark.com/2012/02/17/rails-refactoring-fun-looking-at-old-code</id>
+    <content type="html"><![CDATA[<p>
+    Every so often I get to do some updates on code I wrote years ago. It&#39;s often a hideous experience (especially when you&#39;re in a rush and did not write the code), but it can be entertaining and enjoyable. Taking a big sloppy mess of redundancies and complications and making it readable, clean, and orderly&mdash;it&#39;s a satisfying experience refactoring old unrefined code&mdash;a nice guage of your growth as a human being in the small but large area of your life as a programmer.</p>
+
+<p>
+    I&#39;ll share just a few quick examples. The first two are from a Rails project I had originally built when I was getting my hands dirty with Ruby (and was still a bit handicapped by having programmed so long in PHP).</p>
+
+<p>
+    &nbsp;</p>
+
+<p>
+    <strong>Example 1: ActiveRecord scopes</strong></p>
+
+<blockquote>
+    <p>
+        speakers = Page.find_all_by_page_type_id(PageType.find_by_name(&quot;speaker&quot;).id, :conditions=&gt;{:status =&gt; &#39;online&#39;}, :order=&gt;&quot;position&quot;)</p>
+    <p>
+        <strong>To...</strong></p>
+    <p>
+        &nbsp;speakers = Page.speakers</p>
+</blockquote>
+
+<p>
+    &nbsp;</p>
+
+<p>
+    <strong>Example 2: Unnecessary for loops</strong></p>
+
+<blockquote>
+    <p>
+        &lt;%&nbsp;if page.categories.count &gt; 0<br />
+        &nbsp; &nbsp; c_count = 0<br />
+        &nbsp; &nbsp; page.categories.each do |c|<br />
+        &nbsp; &nbsp; &nbsp; &nbsp; c_count+=1<br />
+        &nbsp; &nbsp; &nbsp; &nbsp; if c_count &gt;1&nbsp;<br />
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; %&gt;/ &nbsp;&lt;%<br />
+        &nbsp; &nbsp; &nbsp; &nbsp; end %&gt;<br />
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;%=c.name %&gt;<br />
+        &nbsp; &nbsp; &nbsp;&lt;%&nbsp;end&nbsp;%&gt;<br />
+        &lt;%&nbsp;end&nbsp;%&gt;</p>
+    <p>
+        <strong>To...</strong></p>
+    &nbsp;&lt;%= page.categories.map(&amp;:name).join(&quot;/&quot;) ?&gt;</blockquote>
+
+<p>
+    <strong>Example 3: Ambiguous variable names</strong> -- This was code written by a previous developer. From what I could tell &quot;in&quot; and &quot;out&quot; had nothing to do with what the numbers actually were, nor anything to do with the words &quot;in&quot; and &quot;out&quot;... it caused me a lot of confusion.</p>
+
+<blockquote>
+    <p>
+        EXACT_TARGET_LISTS = {<br />
+        &nbsp; &nbsp; :in &nbsp; &nbsp; &nbsp; =&gt; &#39;867530933&#39;,<br />
+        &nbsp; &nbsp; :out &nbsp; &nbsp; &nbsp;=&gt; &#39;9021055&#39;<br />
+        }</p>
+    <p>
+        <b>To...</b></p>
+    EXACT_TARGET_LISTS = {<br />
+    &nbsp; &nbsp; :newsletter_welcome &nbsp; =&gt; &#39;867530933&#39;,<br />
+    &nbsp; &nbsp; :member_welcome &nbsp; &nbsp; &nbsp;=&gt; &#39;90210555&#39;<br />
+    }</blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Applescript, Omnifocus & Transmit]]></title>
+    <link href="http://bizzark.com/2011/02/06/applescript-omnifocus-transmit.html"/>
+    <updated>2011-02-06T00:00:00Z</updated>
+    <id>http://bizzark.com/2011/02/06/applescript-omnifocus-transmit</id>
+    <content type="html"><![CDATA[<p>
+    I&#39;ve been using <a href="http://www.omnigroup.com/products/omnifocus" target="_blank">Omnifocus</a> now for about 3 months, after struggling to find a good system to keep track of what I&#39;m doing. It&#39;s pretty perfect. Except for one thing.&nbsp;It&#39;s not web based, and the only mobile app it has is for the iPhone. So I can&#39;t access anything on my lists unless I have my computer with me. So, I was daydreaming one day and wondering how I could take a list, and put it online so I could (for instance) go to the grocery store and see exactly what I need to get, and mark off what I put in my cart. Sure I could print it off, but sometimes I can&#39;t do that. And sure, I could use their HTML export, but they don&#39;t have check boxes on them so I can&#39;t check off what I&#39;ve done.</p>
+
+<p>
+    So long story short, I instead decided to spend a good 4 hours, learn a bit of&nbsp;<a href="http://developer.apple.com/AppleScript/" target="_blank">Applescript</a>, and create a nifty Applescript&nbsp;which exports an Omnifocus list to custom html with check boxes next to each item (<a href="http://www.brentwejrowski.com/omni/omni.html" target="_blank">see an example here</a>), and automatically uploads it via FTP in <a href="http://www.panic.com/transmit/" target="_blank">Transmit</a>... all in the click of a button.</p>
+
+<p>
+    Anyways, for anyone who could actually make use of this, here&#39;s what I&#39;ve got:</p>
+
+<div class="code">
+    on run<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;tell application id &quot;com.omnigroup.OmniFocus&quot; to tell default document<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set PP to project &quot;Grocery Print list&quot; in folder &quot;Personal&quot;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set pptasks to every task of PP where completed is false<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;end tell<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;set f to ((path to desktop as text) &amp; &quot;omni.html&quot;)<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;set nref to open for access file f with write permission<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;write &quot;<br />
+    &lt;html&gt;<br />
+    &lt;head&gt;<br />
+    &lt;title&gt;Omnifocus export - &quot; &amp; (current date) &amp; &quot; &lt;/title&gt;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link href=&#39;style.css&#39; media=&#39;screen&#39; rel=&#39;stylesheet&#39; type=&#39;text/css&#39; /&gt;<br />
+    &lt;/head&gt;<br />
+    &lt;body&gt;<br />
+    &lt;div id=&#39;container&#39;&gt;<br />
+    &lt;div class=&#39;title&#39;&gt;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Omnifocus Applescript Export&lt;/h1&gt;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&quot; &amp; (current date) &amp; &quot;<br />
+    &lt;/div&gt;<br />
+    &lt;ul&gt;&quot; to file f<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;repeat with ot in pptasks<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set testVars to name of ot<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write &quot;&lt;li&gt;&lt;label&gt;&lt;input type=&#39;checkbox&#39; /&gt;&quot; &amp; testVars &amp; &quot;&lt;/label&gt;&lt;/li&gt;&quot; to file f<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;end repeat<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;write &quot;<br />
+    &lt;/ul&gt;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp; &lt;/div&gt;<br />
+    &lt;/body&gt;<br />
+    &lt;/html&gt;&quot; to file f<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;close access nref<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;tell application &quot;Transmit&quot;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set myFave to item 1 of (favorites whose name is &quot;Brentwejrowski.com&quot;)<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set myRules to (skip rules whose name is &quot;New Rule&quot;)<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tell current tab of (make new document at end)<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connect to myFave<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tell local browser<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;change location to path &quot;~/Desktop&quot;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end tell<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tell remote browser<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;upload item at path &quot;~/Desktop/omni4.html&quot; to &quot;public_html/omni&quot; with resume mode overwrite<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end tell<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;close remote browser<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end tell<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;end tell<br />
+    end run</div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A bit of silence, a bit of change]]></title>
+    <link href="http://bizzark.com/2010/12/31/a-bit-of-silence-a-bit-of-change.html"/>
+    <updated>2010-12-31T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/12/31/a-bit-of-silence-a-bit-of-change</id>
+    <content type="html"><![CDATA[<p>
+    I haven&#39;t been too active here. One new website posted in the last 6 months, and not too many blog posts. I also had a sweet e-newsletter going for a few months. Then the tides turned and everything stopped. I am alive, and still coding and designing, among other things. Just not as much under <em><strong>Bizzark</strong></em>. I&#39;ve been doing majority of my work under a few other local companies, which is why everything here kind of came to a halt. I decided to step back off the stressful pursuit of marketing myself and let other people feed me the work. Much more fun. Unfortunately I don&#39;t think I can post any of the fun stuff I have been working on (A ton of Wordpress websites, some RoR apps, a bit of Flash, and some other random stuff..).&nbsp;</p>
+
+<p>
+    That being said, the work area will probably be continue being pretty lifeless for a while. &nbsp;But I have some hopes to start some more miscellaneous blog posts. To be continued...</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Awesome error pages]]></title>
+    <link href="http://bizzark.com/2010/09/03/awesome-error-pages.html"/>
+    <updated>2010-09-03T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/09/03/awesome-error-pages</id>
+    <content type="html"><![CDATA[<p>
+    Not much to say about these except for they are awesomely unique and amusing. I&#39;m actually kind of happy when the twitter website goes down. And I recently found the Oregon Trail error message on Digg and though it was pretty clever.&nbsp;</p>
+
+<p>
+    <img alt="Digg error message" src="http://www.bizzark.com/images/attachments/page_48/diggdown.jpg" style="width: 750px; height: 419px; " /></p>
+
+<p>
+    <img alt="" src="/images/attachments/page_48/twitterdown2.jpg" style="width: 750px; height: 559px; " /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Part 3 - website content and clarity]]></title>
+    <link href="http://bizzark.com/2010/06/18/part-3-website-content-and-clarity.html"/>
+    <updated>2010-06-18T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/06/18/part-3-website-content-and-clarity</id>
+    <content type="html"><![CDATA[<p>
+    The subconscious mind of a web surfer is an attention deficit mind. We don&#39;t read through websites, we skim them. We bounce our eyes around from top to bottom looking at the biggest and catchiest items and they try to sort out what makes sense. And if something sticks out... we click, or read more. *see Don&#39;t make me think for good info.</p>
+
+<p>
+    If our website is boring, unclear, and has no visible hierarchy, it will probably turn people away pretty fast. Here&#39;s a couple things that will allow our subconscious mind to surf gracefully:</p>
+
+<h3>
+    Eye candy</h3>
+
+<p>
+    Since most of us only read a small fraction of what&#39;s on a page, we need some sort of clarity to guide us, and some levels of distinction. There should be some level of contrast between the items on a page&mdash;between things like the navigation and the content, or between one piece of information and another. The web surfer enjoys whitespace, large letters, and bold bright colors.</p>
+
+<h3>
+    Sum it up for me, I don&#39;t want to read</h3>
+
+<p>
+    Five straight paragraphs on a page can be a daunting read for us. It sounds stupid but it&#39;s true. Most people just won&#39;t read it. Web surfers need the Spark Notes of Spark Notes. If you split content up into smaller chunks, sum up paragraphs in larger headings, or bold some information so people can see what it&#39;s all about... it may draw people in who would otherwise click away.</p>
+
+<p>
+    <img alt="" src="/images/attachments/page_45/small-iStock000012187964XSmall.jpg" style="float: right; width: 301px; height: 200px; margin-left:10px; margin-bottom:5px;" />We do what&#39;s in front of us, and go where we can assume a destination. I started playing the guitar 9 years ago because I stumbled upon an grossly old guitar in my closet. I bought this book at the book store because it had a clear and interesting title that intrigued me, it had an interesting summary on the back, and satisfied me when I read it back at home. I found the carrots at the grocery store because I looked around to the walls for the typical veggies area&mdash;the wide open space with no tall shelves, but a few mid level containers with mounds of watermelon, lettuce and bags of potatoes. When things are clear, simple, and concise, we like it... especially on websites.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Part 2 - on up to date info + transparency]]></title>
+    <link href="http://bizzark.com/2010/05/31/the-subconscious-mind-of-a-web-surfer-on-up-to-date-info-transparency.html"/>
+    <updated>2010-05-31T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/05/31/the-subconscious-mind-of-a-web-surfer-on-up-to-date-info-transparency</id>
+    <content type="html"><![CDATA[<h2>
+    Are you alive?</h2>
+
+<p>
+    With the web world filled with dynamic sites like Facebook, Twiter, blogs, and live webcasts, people now are taken back by sites that just sit and don&#39;t do much. Ten years ago that was normal. Now days there are multiple ways to get in contact with people instantly on the web. Most companies now have twitter accounts and are readily available to spout out their latest news and answer questions. It&#39;s becoming a bigger and bigger part of our world so much so that people now (and especially in the coming years) wonder what&#39;s up with someone who doesn&#39;t have any new content on their website. <i>Do they exist anymore? Are they alive?</i></p>
+
+<p>
+    &nbsp;</p>
+
+<h2>
+    Tell me what you&#39;re doing</h2>
+
+<p>
+    A key question people have when they visit a website is, who are you, or what do you do? This often is found in the about pages, or services pages. And though these may help explain what you do, it may not be enough for the average web surfer now days. People want to get an idea of what type of people run the company, who they are, and how they work. Because we&#39;re constantly being fed this information from so many other sources, it&#39;s just normal. It&#39;s something that web-surfers crave (like I often crave arnold palmers), and it&#39;s also an invaluable tool to be able to give someone insight into who you are or what your company does.</p>
+
+<p>
+    &nbsp;</p>
+
+<h2>
+    Spice up your your website with...</h2>
+
+<ul>
+    <li>
+        <b>Blogs</b> - This is a great way to share a whole lot of information on anything. It also is a good way to express your character and personality.</li>
+    <li>
+        <b>News</b> - Let people know what&#39;s going on. What&#39;s the latest thing that&#39;s happened, latest project you&#39;ve worked on or are planning on.</li>
+    <li>
+        <b>Twitter</b>&nbsp;- Twitter is a great way to share information. And it&#39;s quick and easy to use too. Not only using it, but placing your twitter feed on your home page can be a good way to connect.</li>
+    <li>
+        <b>Facebook fan pages<span class="Apple-style-span" style="font-weight: normal;">&nbsp;- Another great way to connect with people. Checkout <a href="http://facebook.com/bizzark" target="_blank">my facebook page</a>.</span><br />
+        </b></li>
+    <li>
+        <b>Reviews or testimonials</b>&nbsp;- I&#39;ve been incorporating these more and more on websites I build. It seems to be fun and useful for everyone. People like reading them and hearing what people have to say, and if people are happy with you they are usually pretty happy to write a few sentences.</li>
+</ul>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Part 1 - on website design]]></title>
+    <link href="http://bizzark.com/2010/05/17/the-subconscious-mind-of-a-web-surfer-on-design.html"/>
+    <updated>2010-05-17T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/05/17/the-subconscious-mind-of-a-web-surfer-on-design</id>
+    <content type="html"><![CDATA[<h2>
+    <span class="Apple-style-span" style="font-size: 12px; font-weight: normal; ">&nbsp;</span>A good website design changes the brain</h2>
+
+<p>
+    Our perceptions of everything are deeply connected with how we view them, from the looks and persona of the acquaintance we first meet, to the packaging on the loaf of bread we buy at the grocery store. Hopefully we don&#39;t have a bad habit of solely judging based on appearance. But, to a large extent, it is literally the case that <strong>appearance directly resembles what&#39;s on the inside</strong>. Here are a few examples of how this crazy connection plays out:</p>
+
+<ul>
+    <li>
+        <h3>
+            Pretty Packaging</h3>
+        <img alt="website design and the brain" src="http://www.bizzark.com/images/attachments/page_41/brain.gif" style="position: absolute; z-index: -1; width: 298px; height: 400px; margin-left:180px;margin-top:-25px; " />200 people were brought in a room to taste test 2 different brands of brandy. All the testers were blindfolded. The ratings came out equal. A&nbsp;second test was done: This time they showed the packaging. Brand B won hands down. Third test: &nbsp;Another 200 people came in, and this time they swapped the brandy into opposite bottles. This time brand A won hands down. The&nbsp;conclusion: the package design deeply affected people&#39;s perception of the taste. <span style="color:#808080;">*</span></li>
+    <li>
+        <h3>
+            The color of a soda can changes taste buds</h3>
+        There was an experiment done where 7up added 15% more yellow to green on their packaging, and people report tasting more lime then lemon flavor and claiming they had changed the taste, when all they changed was the color. <span style="color:#808080;">*</span></li>
+    <li>
+        <h3>
+            The flimsy business card</h3>
+        Quite a bit can be said about a company based on their business cards, the design and even the way the paper feels. If you have many business cards and flip through them, you&#39;ll find that business cards that look good, are printed well, and feel good are, for the most part, from larger and more well established companies. A flimsy business&nbsp;card often equals a flimsy business. A tacky design and crooked cut card probably resembles a disorganized and poorly established company. People who design or print notice these things when they first pick up and study someone&#39;s card. But most people pick up on these things wtihout even realizing it.&nbsp;<br />
+        &nbsp;</li>
+</ul>
+
+<p>
+    <img align="right" alt="Tillamook Cheese!" src="http://www.bizzark.com/images/attachments/page_41/cheese.jpg" style="margin-left: 10px; margin-bottom: 10px; width: 225px; height: 225px; margin-top:-20px; " /></p>
+
+<p>
+    <strong>We usually don&#39;t even think about these things</strong>. We go to the grocery store and buy the bright yellow cheese with pretty packaging because we assume it&#39;s going to be fresh and tasty cheddar cheese. What we didn&#39;t know was that we probably would not have bought the cheese if they didn&#39;t put the yellow food coloring in it and do a ton of research designing their awesome cheese wrapper.</p>
+
+<p>
+    I buy <a href="http://www.loaflovetour.com" target="_blank">Tillamook Cheese</a> because (1) it looks like cheese, (2) their wrapper makes them look like a company who knows what they&#39;re doing (making good cheese), and (3) after I eat it I tell myself how good it tastes and go buy Tillamook cheese next time I go to the store.</p>
+
+<p>
+    <strong>The point in all this is</strong> to say that people subconsciously judge things based on appearance and make choices on a daily basis based on how they perceive things. <strong>We find a website and may stay solely based on the design</strong>. It may not be the case every time or with everyone, but is a huge contributing factor. It&#39;s usually the first thing we notice when we visit a website, something which often immediately attracts us or turns us aways.<br />
+    &nbsp;</p>
+
+<div style="width:230px;font-size:80%;">
+    <hr />
+    * Both of these examples are from <a href="http://www.amazon.com/Blink-Power-Thinking-Without/dp/0316172324" target="_blank">Blink</a>.</div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The subconscious mind of a web surfer - a three part series]]></title>
+    <link href="http://bizzark.com/2010/04/05/the-subconscious-mind-of-a-web-surfer-a-three-part-series.html"/>
+    <updated>2010-04-05T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/04/05/the-subconscious-mind-of-a-web-surfer-a-three-part-series</id>
+    <content type="html"><![CDATA[<p>
+    <em>These people look like they have it together...</em></p>
+
+<p>
+    <em>This website looks awful.. this company must not know what they&#39;re doing...</em></p>
+
+<p>
+    <em>You&#39;re not what I wanted!</em></p>
+
+<p>
+    <em>Is this company in business still? It doesn&#39;t look like it...</em></p>
+
+<p>
+    <em>Ooh, I am intrigued. Give me more!..</em></p>
+
+<p>
+    <em>How in the world do I contact these people? They must not want to talk...</em></p>
+
+<p>
+    &nbsp;</p>
+
+<p>
+    <img alt="Website analytics" src="/images/attachments/page_33/Analyticsstats.gif" style="margin-left: 15px; margin-right: 15px; float: right; width: 300px; height: 106px; " title="If you have Google Analytics setup, a quick way to measure the effectiveness (or I'll call it your Intrigue Factor) of your website is to look at your &quot;Avg.Time On Site&quot;. Looking at certain stats can often give us a pretty clear indication of how well we are doing with this, and even answers as to what works and what doesn't. " /></p>
+
+<p>
+    If you&#39;ve ever watched yourself carefully while surfing websites (especially when you&#39;re looking for something), you&#39;ll notice how quickly you dismiss certain websites. While this may be a time saver for users, it may also be detrimental to website owners. Too often there are great companies and individuals with poorly designed websites. Even if you may be the greatest at what you do, people may easily dismiss you by your website. And to a certain extent rightfully so. We do this with people all the time. <strong>You can tell a lot about a person</strong> by the way they dress, the words they use, and by what you see when you enter their bedroom. Psychologist Samuel Gosling did a study to measure how well friends vs strangers know an individual. &nbsp;As it turns out, complete strangers were able to assess a person&mdash;their trustworthiness, conscientiousness, emotional stability, and openness&mdash;better than friends, just by studying their rooms for 15 minutes (via <a href="http://www.amazon.com/Blink-Power-Thinking-Without/dp/0316172324" target="_blank">Blink</a>, pg 36).&nbsp;</p>
+
+<p>
+    <strong>The same is true for websites</strong>. People, within seconds, assess the value of a company or person and make decisions on whether or not they want to take further action, or go to another website. Over the coming weeks I will cover some&nbsp;basic things that people subconsciously pick up on while visiting websites:</p>
+
+<ul>
+    <li>
+        Week 1 - <strong>Design</strong></li>
+    <li>
+        Week 2 -&nbsp;<strong>Up to date info &amp; transparency</strong></li>
+    <li>
+        Week 3 - <strong>Clarity &amp; content</strong></li>
+</ul>
+
+<p>
+    &nbsp;</p>
+
+<p>
+    Do you ever notice anything specific about websites that either attract and intrigue you, or frustrate and turn you away?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[What in the world is RSS?]]></title>
+    <link href="http://bizzark.com/2010/03/03/what-in-the-world-is-rss.html"/>
+    <updated>2010-03-03T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/03/03/what-in-the-world-is-rss</id>
+    <content type="html"><![CDATA[<div style="text-align:center; margin-top:-25px; margin-bottom:100px;">
+    <img alt="" src="/images/attachments/page_26/RSSheader.gif" style="width: 522px; height: 323px; " /></div>
+<h1>
+    Ever see those strange RSS boxes<br />
+    in your browser bar?</h1>
+<div style="float:left; margin-bottom:25px; margin-right:7px; text-align:center">
+    Firefox<br />
+    <img alt="RSS Firefox" src="/images/attachments/page_26/rssfirefox240.gif" style="border:1px solid #404141" /></div>
+<div style="float:left; margin-bottom:25px; margin-right:7px;text-align:center">
+    Safari<br />
+    <img alt="RSS Safari" src="/images/attachments/page_26/rsssafari240.gif" style="border:1px solid #404141" /></div>
+<div style="float:left; margin-bottom:25px; text-align:center">
+    Internet Explorer<br />
+    <img alt="RSS IE8" src="/images/attachments/page_26/rssie8240.gif" style="border:1px solid #404141" /></div>
+<p>
+    Or those bright orange RSS icons? Most probably don&#39;t notice them. If you&#39;ve ever clicked them you&#39;ll know that it takes you to a funky format of information. It looks pretty boring. This is an RSS feed.&nbsp;What is it? It&#39;s a standard format of information that makes it easy for computers to decode and understand. It stands for &quot;Really Simple Syndication,&quot; or &quot;Rich Site Summary.&quot; Typically you will find these on websites that have a lot of updates, especially blogs and news websites. What would you do with it?</p>
+<p>
+    <br />
+    <br />
+    &nbsp;</p>
+<h1>
+    Organized blog reading</h1>
+<p>
+    <img alt="" src="/images/attachments/page_26/googlreader370.jpg" style="margin-top: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 10px; float: right; width: 370px; height: 211px; " />For those who read more than a few blogs, a feed reader is a great way to keep up to date with your favorite blogs. They allow you to have view things like blogs in one location without going to the actual website. If you browse a lot websites, it would be pretty tedious to visit each site, much less remember them.&nbsp;I currently am subscribed to 117 blogs. I confess many of these I don&#39;t keep tabs on all the time. But keeping these organized through a reader helps me remember them, and browse through them at my convenience. &nbsp;There are a lot of online applications and software that allow you to organize and read blogs. I personally like, and would highly suggest&nbsp;<a href="http://www.google.com/reader/" target="_blank">Google Reader</a> because it is all stored online, and it is very easy to organize and use. Google Reader is set as my home page, and when I have free time I&#39;ll browse my subscriptions and find interesting articles to read (as well as do this in down time on my phone).</p>
+<p>
+    <br />
+    <br />
+    <img alt="" src="/images/attachments/page_26/NewspaperFeed256x256.png" style="margin-left: -75px; float: left; width: 256px; height: 256px; " /></p>
+<div style="float:left; width: 569px;">
+    <div>
+        <h1>
+            Read RSS and<br />
+            change your life</h1>
+        I say everyone really should read blogs. You could probably find a decent blog on virtually any topic. For myself I read mostly design, programming, and photography blogs, as well as blogs from friends and authors, and news. It helps me keep informed about what&#39;s going on in specific industries, peoples&#39; lives, get inspired, and it can even be a good way to communicate with others, via comments and responses. It&#39;s an invaluable resource for staying informed, inspired, and educated.</div>
+</div>
+
+<div>
+    <p>
+        <br />
+        &nbsp;</p>
+    <h2>
+        Have a favorite blog you subscribe to?</h2>
+    <p>
+        List a few of your favorite below<br />
+        &nbsp;</p>
+    <p>
+        Sign up for <a href="http://google.com/reader" target="_blank">Google Reader here</a>.<br />
+        Here is my <a href="/blog.xml" target="_blank">blog feed URL</a>, and <a href="/work.xml" target="_blank">work feed URL</a>.</p>
+</div>
+
+<div class="clearfix">
+    .</div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Welcome to the New Website]]></title>
+    <link href="http://bizzark.com/2010/02/16/welcome-to-the-new-website.html"/>
+    <updated>2010-02-16T00:00:00Z</updated>
+    <id>http://bizzark.com/2010/02/16/welcome-to-the-new-website</id>
+    <content type="html"><![CDATA[<p>
+    Welcome to the new website. After many months of planning and many hours of work, I&#39;ve finally completed the new website along with a new CMS. Why would I create another website? Well apart from it being due time, I thought I would simplify the layout of the website and make it a bit more usable, likable, and useful to the average person (unfortunately some were a bit taken back by the craziness of the 3d background on the old website). Also I thought I would better showcase what I&#39;m capable of by not only building this website in a custom programmed <a href="/content-management-systems">content management system</a>, but by adding practical features that I&#39;ve used with other clients (Testimonials, Twitter &amp; Facebook integration, nifty interactions etc.).&nbsp;</p>
+
+<p>
+    <span _fck_bookmark="1" style="display: none; ">&nbsp;</span></p>
+
+<h3>
+    Behind the scenes</h3>
+
+<p>
+    <img alt="" src="/images/attachments/page_18/welcomecms.gif" style="margin-left: 7px; margin-bottom: 7px; float: right; width: 325px; height: 270px; " />Behind this nifty website is a content management system (or CMS) that I have built. It&#39;s a system that&#39;s evolved over the last couple years; one that I have built to be a foundation for future projects and website, allowing for more complex features while still keeping a simple interface for people like you to manage your website super easily. The system was hand coded myself from scratch using Ruby on Rails (<a href="http://en.wikipedia.org/wiki/Ruby_on_Rails" target="_blank">read more about Rails</a>,&nbsp;<a href="http://rubyonrails.org/applications" target="_blank">view well known Ruby on Rails websites</a>). In the future I plan on releasing a public version of the CMS which will allow you to log in and see how it works yourself. Stay tuned for that.</p>
+
+<p>
+    In the meantime, subscribe to my RSS feed to stay tuned for future blogs and work (<a href="/what-in-the-world-is-rss">click here for more info on blogs and RSS feeds</a>). I plan on writing posts regularly. Hopefully it will all be useful and intriguing information pertaining to websites and this crazy world of the internet.</p>
+
+<p>
+    Thanks for stopping by!</p>
+]]></content>
+  </entry>
+  
+</feed>

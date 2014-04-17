@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSH pairing tunnels with Tmux and ngrok</title>
+  <meta content='Bizzark is a Scottsdale Arizona based website design and development company.' name='description'>
+  <meta content='website development, arizona website development, arizona web developer, arizona web development company' name='keywords'>
+  <link href='http://www.bizzark.com/blog.xml' rel='alternate' title='Bizzark Blog Feed' type='application/rss+xml'>
+  <link href='/favicon.png' rel='icon' type='image/png'>
+
+  <link rel="stylesheet" href="/css/main.css">
+
+  <script>
+   var styleNode = document.createElement('style');
+   styleNode.type = "text/css";
+   css = "body{ background: #d5d5d5 url(\"/images/bg" + (Math.floor((Math.random()*4)+1)) +".png\") no-repeat top left; background-attachment:fixed;}";
+   
+
+   // browser detection (based on prototype.js)
+   if(!!(window.attachEvent && !window.opera)) {
+      styleNode.styleSheet.cssText = css;
+   } else {
+      var styleText = document.createTextNode(css);
+      styleNode.appendChild(styleText);
+   }
+   document.getElementsByTagName('head')[0].appendChild(styleNode);
+  </script>
+
+  <script src='//use.typekit.net/ztt1pbp.js' type='text/javascript'></script>
+  <script>
+    //<![CDATA[
+      try{Typekit.load();}catch(e){}
+    //]]>
+  </script>
+</head>
+
+<body class=''>
+  <div id='bg'></div>
+  <div id='bgoverlay'></div>
+  <div id='container'>
+        <div id='header'>
+      <div id='words'>
+        <h1>RUBY HTML WWW</h1>
+        <h2>ZEROS AND ONES FROM BRENT WEJROWSKI</h2>
+      </div>
+      <div id='logo'><h1><a href="/">BIZZARK</a></h1></div>
+      <div id='nav'>
+        <h1 class='nav '><a href="/">BLOG</a></h1>
+        <h1 class='nav '><a href="/about.html">ABOUT</a></h1>
+      </div>
+    </div><!--/#header-->
+
+    <div id='content'>
+      <h1 class="header-banner">SSH pairing tunnels with Tmux and ngrok</h1>
+<div class="top-back">
+  <a href="/">&larr; Back to Blogs</a>
+</div>
+<div class="post-date">
+  17 April 2014
+</div>
+<p>My team has been playing with the idea of remote programming and what that
+would look like, especially for longer periods of time (e.g. remoting from
+Germany for a month or two =). In the office, we don&#39;t often pair
+program unless we need some feedback or want to check out each other&#39;s code.
+When remoting, it&#39;s a bit more difficult to do that.</p>
+
+<p>Now, you could use something like Join.me and screen share. But (1) that&#39;s just
+not very cool. And (2) It can be slow and glitchy. Our entire team uses VIM now,
+so I thought I&#39;d try out session sharing with something like tmux. After
+installing a couple items you can get up and running in no time, sharing a
+terminal window at lightning speed. Here was my process to get this up and
+running (I&#39;m using OSX here).</p>
+
+<h1>1. Install Tmux</h1>
+
+<p>Tmux allows you to manage multiple terminal windows into one, almost like using
+vim splits. You can also share sessions with it, which is what I&#39;ll be using it
+for.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ brew install tmux
+</code></pre></div>
+<h1>2. Authorize users with github</h1>
+
+<p>You&#39;ll need to allow users to ssh into your machine. Instead of giving them my
+password or creating a user for them, I&#39;m going to use their ssh key. You
+can set it up manually, or for Github users there&#39;s a nifty gem for that.
+Github apparently stores all the public keys you add to it... publically
+(github.com/username.keys). The <a href="https://github.com/chrishunt/github-auth">gh-auth gem</a>.
+makes use of this so we can add and remove user keys super easily.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ gem install github-auth
+</code></pre></div>
+<p>Auth a user to your machine and set them up to automatically join your tmux
+session when they login, which we&#39;ll name &quot;pairing.&quot;</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ gh-auth add --users=&quot;username&quot; --command=&quot;$(which tmux) attach -s pairing&quot;
+</code></pre></div>
+<p>BTW to view and remove users you can simply run:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ gh-auth list
+$ gh-auth remove --users=username
+</code></pre></div>
+<p>This will give them access to your normal user, you could create a new user
+with different privileges. I&#39;m simply creating an
+<a href="http://osxdaily.com/2011/05/22/setup-user-name-alias-mac/">alias</a> for my user,
+with the username tmux.</p>
+
+<h2>3. Ngrok</h2>
+
+<p>Unless you want to setup a server for this and put your code up there, SSHing
+into your localhost can be a bit tricky. <a href="https://ngrok.com/">Ngrok</a> is a
+nifty, open source project (see <a href="https://github.com/inconshreveable/ngrok">ngrok on gihub</a>)
+that basically acts as a proxy to your machine. You can install it on a
+server yourself, or use ngrok.com.</p>
+
+<p>To use ngrok.com&#39;s service, all you have to do is, after downloading it, run
+this first line:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ ./ngrok -proto=tcp 22
+
+ngrok                                              (Ctrl+C to quit)
+Tunnel Status                 online
+Version                       1.6/1.5
+Forwarding                    tcp://ngrok.com:35437 -&gt; 127.0.0.1:22
+Web Interface                 127.0.0.1:4040
+# Conn                        0
+Avg Conn Time                 0.00ms
+</code></pre></div>
+<p>That&#39;ll work for SSHing, and It&#39;ll give you a random port to connect to. Also,
+if for instance you had a rails server running on port 3000, you could expose
+it with ngrok and get a random subdomain on ngrok.com to connect to by running: </p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ ./ngrok 3000
+
+ngrok                                                      (Ctrl+C to quit)
+Tunnel Status                 online
+Version                       1.6/1.5
+Forwarding                    http://3117bccc.ngrok.com -&gt; 127.0.0.1:3000
+Forwarding                    https://3117bccc.ngrok.com -&gt; 127.0.0.1:3000
+Web Interface                 127.0.0.1:4040
+# Conn                        0
+Avg Conn Time                 0.00ms
+</code></pre></div>
+<p><strong>Note:</strong> I&#39;ve seen a number of people talk about and use ngrok.com. Ultimately
+who knows what happens on his server, or his executable! Seeing that he has a 
+number of largely followed projects, I&#39;ve seen a number of big companies mention
+it, and all I&#39;m really sending is bits of encrypted code back and forth, I&#39;m
+going to trust him... for now.</p>
+
+<h2>4. Pair</h2>
+
+<p>Now, to set it all up, after starting ngrok, start your tmux session</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ tmux new -s pairing
+</code></pre></div>
+<p>And then simply have your friend connect via ssh to the ngrok server and port
+number ngrok gave you.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ssh youruser@ngrok.com -p 12345
+</code></pre></div>
+<p>and viol&agrave;!</p>
+
+<p>You can kill the tmux session with <strong>tmux kill-server</strong>, shut
+down ngrok with ctrl+c, and then remove the user&#39;s keys with gh-auth . Just
+make sure you trust the person on the other end... and re-iterate to your
+co-workers NOT to goof around and type something stupid...   ever.</p>
+
+<p>There&#39;s also <a href="https://github.com/zolrath/wemux">wemux</a> which you can setup
+read-only modes and has a few other nifty features. I may try to setup another
+user with restricted access.</p>
+
+<p>c.f.</p>
+
+<ul>
+<li><a href="https://coderwall.com/p/pcrr4w">https://coderwall.com/p/pcrr4w</a>,</li>
+<li><a href="http://iamvery.com/2013/11/16/tmux-pairing-anywhere-on-your-box.html">http://iamvery.com/2013/11/16/tmux-pairing-anywhere-on-your-box.html</a></li>
+</ul>
+
+<p><strong>PS Note on vim colors:</strong> I had some troubles with getting colors to work with tmux. 
+You have to make sure tmux is using 256 colors. I have a bash alias for this:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text"># vim colors in tmux. c.f. http://stackoverflow.com/questions/10158508/lose-vim-colorscheme-in-tmux-mode
+alias tmux=&quot;TERM=screen-256color-bce tmux&quot;                                      
+</code></pre></div>
+<p>And then in ~/.tmux.conf</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">set -g default-terminal &quot;xterm-256color&quot;
+</code></pre></div>
+
+  <div class="post-footer">
+    <div class="comments-num"><a href="/<%= @page.slug %>#disqus_thread">Comments (View)</a></div>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    function getDisqusEmbed(){
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = 'http://bizzark-web-development.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    } (function() {
+      setTimeout("getDisqusEmbed()", 50);  
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=bizzark-web-development">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </div><!--/#content-->
+  </div><!--/container-->
+
+<script>
+  //<![CDATA[
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  //]]>
+</script>
+<script>
+  //<![CDATA[
+    try{ var pageTracker = _gat._getTracker("UA-5643858-1"); pageTracker._trackPageview(); } catch(err) {}
+  //]]>
+</script>
+
+</body>
+</html>
