@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Refactoring Inspiration
+title: Refactoring Inspiration - Code Smells
 date: 2014-10-14 12:30:00
 ---
 
