@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Refactoring Inspiration - Code Smells</title>
+  <meta content='Bizzark is a Scottsdale Arizona based website design and development company.' name='description'>
+  <meta content='website development, arizona website development, arizona web developer, arizona web development company' name='keywords'>
+  <link href='http://www.bizzark.com/blog.xml' rel='alternate' title='Bizzark Blog Feed' type='application/rss+xml'>
+  <link href='/favicon.png' rel='icon' type='image/png'>
+
+  <link rel="stylesheet" href="/css/main.css">
+
+  <script>
+   var styleNode = document.createElement('style');
+   styleNode.type = "text/css";
+   css = "body{ background: #d5d5d5 url(\"/images/bg" + (Math.floor((Math.random()*4)+1)) +".png\") no-repeat top left; background-attachment:fixed;}";
+   
+
+   // browser detection (based on prototype.js)
+   if(!!(window.attachEvent && !window.opera)) {
+      styleNode.styleSheet.cssText = css;
+   } else {
+      var styleText = document.createTextNode(css);
+      styleNode.appendChild(styleText);
+   }
+   document.getElementsByTagName('head')[0].appendChild(styleNode);
+  </script>
+
+  <script src='//use.typekit.net/ztt1pbp.js' type='text/javascript'></script>
+  <script>
+    //<![CDATA[
+      try{Typekit.load();}catch(e){}
+    //]]>
+  </script>
+</head>
+
+<body class=''>
+  <div id='bg'></div>
+  <div id='bgoverlay'></div>
+  <div id='container'>
+        <div id='header'>
+      <div id='words'>
+        <h1>RUBY HTML WWW</h1>
+        <h2>ZEROS AND ONES FROM BRENT WEJROWSKI</h2>
+      </div>
+      <div id='logo'><h1><a href="/">BIZZARK</a></h1></div>
+      <div id='nav'>
+        <h1 class='nav '><a href="/">BLOG</a></h1>
+        <h1 class='nav '><a href="/about.html">ABOUT</a></h1>
+      </div>
+    </div><!--/#header-->
+
+    <div id='content'>
+      <h1 class="header-banner">Refactoring Inspiration - Code Smells</h1>
+<div class="top-back">
+  <a href="/">&larr; Back to Blogs</a>
+</div>
+<div class="post-date">
+  14 October 2014
+</div>
+<p>I want to share some more from Martin Fowler&#39;s <a href="http://refactoring.com">Refactoring</a>, on what he calls code smells. It&#39;s a term everyone has most likely heard, and apparently a term Kent Beck coined at the time his daughter was a newborn. A quote at the beginning of the chapter says &quot;If it stinks, change it. -- Grandma Beck, discussing child-rearing philosophy.&quot;</p>
+
+<p>Before getting into his actual refactorings, which is the bulk of the book, him and Kent Beck share a list of code smells, or indications for a need to refactor. He prefaces this section by saying that no set of metrics can rival human intuition. You need to develop your own sense for this. And interestingly, in these smells, as he calls them, as well as most of the refactorings, there will be one that does the exact opposite of another. There are trade offs, give and takes, situations where one refactoring has potential to cause another problem, and situations where a supposed code smell really isn&#39;t quite strong enough to justify a refactoring. Being more aware, however, of what your options are can help give direction and clarity when you come across code that doesn&#39;t seem quite right. So he talks about these as inspiration when you&#39;re not sure what refactorings may help in a given situation. He has 22 total. I&#39;m going to share just a few.</p>
+
+<p><strong>Long Parameter Lists</strong> can be hard to manage and understand. The smaller the better. For starters, if your object already has knowledge of a parameter you can call that internally instead. If all of your parameters are passed in data from a single object, you can simply require that object instead. And then if you have a bunch of data with no clear object you can create a special parameter object to take care of that. One exception to these is if you explicitly do not want to create a dependency to the given object. Passing in many parameters makes sense in that case but there is a pain involved to pay attention to.</p>
+
+<p><strong>Lazy Class</strong> is when a class is not pulling its weight. Fowler and Beck are all for simply delegating to new classes or methods just for the sake of clarity, even if it&#39;s only used once, but not when it creates confusion and costs more to maintain it. Sometimes this is because a class got downsized, or maybe there were plans to make more use of it in the future. In the case of this happening in a subclass, he suggests collapsing the hierarchy, moving the subclass methods to the parent. Otherwise you can simply collapse the public protocol of the class into the one using it.</p>
+
+<p><strong>Speculative Generality</strong> is where you create functionality or hooks to handle things that aren&#39;t required, which can make things hard to understand and hard to maintain. This can be a Lazy Class (as above), unused parameters, or even odd abstract method names.</p>
+
+<p><strong>Message Chains</strong> are when the client asks for multiple objects through another object, coupling the client to the structure, where changes in the relationships mean the client needs to change. You can hide the delegation anywhere in the chain by creating a new delegation method, ideally putting it to the lowest place in the chain. Fowler says here, &quot;Some people consider any method chain to be a terrible thing. We are known for our calm, reasoned moderation.&quot;</p>
+
+<p><strong>Middle Man</strong> is basically the opposite of Message Chains. The solution to Message Chains is creating a middle man. This can be good, as it hides the internals of an object, but sometimes it goes too far, or unnecessarily happens in too many places, and you need to just talk to the object directly.</p>
+
+<p><strong>Data Class</strong> is where a class has a field for data with getters, setters, and nothing else. This can allow a bit too much maniuplation from other classes. He suggests seeing how the data is used, and then adding methods ideally to that class to manipulate them. One easy example would be with a collection field, where rather than being able to set obj.courses directly, you call obj.setCourse(course).</p>
+
+<p><strong>Shotgun Surgery</strong> is when every time you make a change you have to make a lot of tiny changes in many different classes, making things hard to find and easy to miss. You can move these into a separate method or field of another class, or if no good candidate for that exists, create a separate class for it.</p>
+
+<p>A few of other code smells he names probably sound familiar (Long Method, Large Class, Switch Statements, Duplicated Code, and Comments), as well as some more obscure ones, which he gives a lot of helpful solutions, notes, and trade off points for. He has a helpful quick reference list of these on the back of the book which I&#39;ve found myself periodically looking over to job my memory.</p>
+
+
+  <div class="post-footer">
+    <div class="comments-num"><a href="/<%= @page.slug %>#disqus_thread">Comments (View)</a></div>
+  </div>
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    function getDisqusEmbed(){
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = 'http://bizzark-web-development.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    } (function() {
+      setTimeout("getDisqusEmbed()", 50);  
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=bizzark-web-development">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </div><!--/#content-->
+  </div><!--/container-->
+
+<script>
+  //<![CDATA[
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  //]]>
+</script>
+<script>
+  //<![CDATA[
+    try{ var pageTracker = _gat._getTracker("UA-5643858-1"); pageTracker._trackPageview(); } catch(err) {}
+  //]]>
+</script>
+
+</body>
+</html>
