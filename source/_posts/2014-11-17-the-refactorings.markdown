@@ -1,7 +1,7 @@
 ---
 layout: post
 title: The Refactorings
-date: 2014-11-15 17:00:00
+date: 2014-11-17 10:45:00
 ---
 
 Words and concepts allow us to reason with things. We create vocabulary and in doing so we can think with more complexity, accomplish more, and have greater understanding. When you don't have vocabulary and concepts for things you [really are more limited](http://www.radiolab.org/story/91725-words/) (<-- crazy story if you want your mind blown). I propose Fowler's Refactorings are sort of like that. Or I'm going to think of them so. They're like the low level concept that help you get to the greater concepts (being, perhaps, your domain language or other patterns, etc), which help get you to that euphoric bliss of writing software where you are never confused, never held back by any complicated or sticky code. Ok perhaps impossible, but I do believe these help propel you... somewhere further along.
