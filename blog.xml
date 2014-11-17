@@ -3,11 +3,64 @@
   <title><![CDATA[]]></title>
   <link href="http://bizzark.com/blog.xml" rel="self"/>
   <link href="http://bizzark.com/"/>
-  <updated>2014-10-16T16:18:25-07:00</updated>
+  <updated>2014-11-17T10:48:12-07:00</updated>
   <id>http://bizzark.com/</id>
   <author>
     <name><![CDATA[Brent Wejrowski]]></name>
   </author>
+  
+  <entry>
+    <title type="html"><![CDATA[The Refactorings]]></title>
+    <link href="http://bizzark.com/2014/11/17/the-refactorings.html"/>
+    <updated>2014-11-17T10:45:00Z</updated>
+    <id>http://bizzark.com/2014/11/17/the-refactorings</id>
+    <content type="html"><![CDATA[<p>Words and concepts allow us to reason with things. We create vocabulary and in doing so we can think with more complexity, accomplish more, and have greater understanding. When you don&#39;t have vocabulary and concepts for things you <a href="http://www.radiolab.org/story/91725-words/">really are more limited</a> (&lt;-- crazy story if you want your mind blown). I propose Fowler&#39;s Refactorings are sort of like that. Or I&#39;m going to think of them so. They&#39;re like the low level concept that help you get to the greater concepts (being, perhaps, your domain language or other patterns, etc), which help get you to that euphoric bliss of writing software where you are never confused, never held back by any complicated or sticky code. Ok perhaps impossible, but I do believe these help propel you... somewhere further along.</p>
+
+<p>So I&#39;m going to share Fowler&#39;s catalogue of refactorings. Many of us make use of a lot of these on a regular basis, and some may seem a bit rudimentary. In whole, however, I do think these can help give more vocabulary to us, and therefore more options, when dealing with the software we&#39;re developing. Many of them are so simple they make refactoring seem... easy. And perhaps it is (at least more than I know I&#39;ve often made it in years past). Often I&#39;ve thought of refactoring in terms of a giant mess that would take a week to fix. I&#39;ve been more inspired though, as Fowler provokes you, to think of refactoring as something simple, easy, something that you can do on an ongoing basis that doesn&#39;t have to be big and daunting (more on that later).</p>
+
+<p>So here&#39;s a brief overview of each section of refactorings (I&#39;ve listed and linked each of the refactorings to examples on Fowler&#39;s site):</p>
+
+<h2>Composing Methods</h2>
+
+<p>Fowler says one of the most common problems and keys to well maintained software is simple methods. This first section of his refactorings deals with this: managing the internals of methods so they are easier to understand. One of the most common ones here is <a href="http://refactoring.com/catalog/extractMethod.html">Extract Method</a> (extracting a piece of logic from a method into a new, well named, method). Or, if an extracted method is just as clear as it&#39;s method name you can do the opposite: <a href="http://refactoring.com/catalog/inlineMethod.html">Inline Method</a>. As with all of the refactorings, one of the goals is clarity and the ability to understand, whether that be delegating to a new object or method, removing unnecessary delegation (if it&#39;s not pulling it&#39;s weight) or simply creating instance variables to explain the purpose of something.</p>
+
+<p><a href="http://refactoring.com/catalog/extractMethod.html">Extract Method</a>, <a href="http://refactoring.com/catalog/inlineMethod.html">Inline Method</a>, <a href="http://refactoring.com/catalog/inlineTemp.html">Inline Temp</a>, <a href="http://refactoring.com/catalog/replaceTempWithChain.html">Replace Temp with Query</a>, <a href="http://refactoring.com/catalog/extractVariable.html">Introduce Explaining Variable</a>, <a href="http://refactoring.com/catalog/splitTemporaryVariable.html">Split Temporary Variable</a>, <a href="http://refactoring.com/catalog/removeAssignmentsToParameters.html">Remove Assignments to Parameters</a>, <a href="http://refactoring.com/catalog/replaceMethodWithMethodObject.html">Replace Method with Method Object</a>, <a href="http://refactoring.com/catalog/substituteAlgorithm.html">Substitute Algorithm</a>, <a href="http://refactoring.com/catalog/extractSurroundingMethod.html">Extract Surrounding Method</a>, <a href="http://refactoring.com/catalog/introduceClassAnnotation.html">Introduce Class Annotation</a>, <a href="http://refactoring.com/catalog/introduceNamedParameter.html">Introduce Named Parameter</a>, <a href="http://refactoring.com/catalog/removeNamedParameter.html">Remove Named Parameter</a>, <a href="http://refactoring.com/catalog/dynamicMethodDefinition.html">Dynamic Method Definition</a>, <a href="http://refactoring.com/catalog/replaceDynamicReceptorWithDynamicMethodDefinition.html">Replace Dynamic Receptor With Dynamic Method Definition</a>, <a href="http://refactoring.com/catalog/isolateDynamicReceptor.html">Isolate Dynamic Receptor</a>, <a href="http://refactoring.com/catalog/moveEvalFromRuntimeToParseTime.html">Move Eval From Runtime To Parse Time</a>, <a href="http://refactoring.com/catalog/removeUnusedDefaultParameter.html">Remove Unused Default Parameter</a>, <a href="http://refactoring.com/catalog/replaceLoopWithCollectionClosureMethod.html">Replace Loop With Collection Closure Method</a></p>
+
+<h2>Moving Features Between Objects</h2>
+
+<p>One of the (if not <em>the</em>) most fundamental decisions on OO, Fowler says, is deciding <em>where</em> to put responsibilities. In his typical and honest fashion, he repeats throughout the book that he never gets this right the first time, but he&#39;s found it less of a burden knowing that he can always refactor. This section is all about organization between objects or even adding functionality to external objects when you can&#39;t modify them. Reading these helped emphasized that point: you aren&#39;t going to know right up front where things should live, and it doesn&#39;t have to be a burden to move things around. Add delegation for clarity, or remove it if it&#39;s no help. You can slowly and easily mold your objects to help them give you the most benefit and clarity.</p>
+
+<p><a href="http://refactoring.com/catalog/moveMethod.html">Move Method</a>, <a href="http://refactoring.com/catalog/moveField.html">Move Field</a>, <a href="http://refactoring.com/catalog/extractClass.html">Extract Class</a>, <a href="http://refactoring.com/catalog/inlineClass.html">Inline Class</a>, <a href="http://refactoring.com/catalog/hideDelegate.html">Hide Delegate</a>, <a href="http://refactoring.com/catalog/removeMiddleMan.html">Remove Middle Man</a>, <a href="http://refactoring.com/catalog/introduceForeignMethod.html">Introduce Foreign Method</a>, <a href="http://refactoring.com/catalog/introduceLocalExtension.html">Introduce Local Extension</a></p>
+
+<h2>Organizing Data</h2>
+
+<p>These refactorings are all about making data easier to work with, whether it be replacing mysterious numbers with a named constant, creating classes for simple but confusing data types like arrays (don&#39;t you love reading things like, person[0][1] = &quot;John&quot;, person[0][2]=&quot;Doe&quot;?), or encapsulating data and giving an external and safe interface for it. A helpful solidification for me in reading this section: The way you work with data and the external interface you give objects not only gives your objects protection (or lack thereof), but it can really help make things easier to reason with. Privatizing methods and attributes that are only used internally not only helps keep things safe, but also solidifies what the object&#39;s main purpose is and how you want others (or your future self) to understand it. Replacing data field public accessors with add/remove methods instead not only helps protect you from accidentally messing up or deleting data by replacing the entire (for example) array but it helps make reading your code easier. I recently saw the confusing affects of this (an unnecessary public setter): I&#39;ll occasionally glance at this setter and wrack my brain for a few minutes trying to figure out why it would be there, then moving on because it&#39;s not something I&#39;m concerned with at the moment. I realized it actually had absolutely no use, and was really causing only confusion.</p>
+
+<p><a href="http://refactoring.com/catalog/selfEncapsulateField.html">Self Encapsulate Field</a>, <a href="http://refactoring.com/catalog/replaceDataValueWithObject.html">Replace Data Value with Object</a>, <a href="http://refactoring.com/catalog/changeValueToReference.html">Change Value to Reference</a>, <a href="http://refactoring.com/catalog/changeReferenceToValue.html">Change Reference to Value</a>, <a href="http://refactoring.com/catalog/replaceArrayWithObject.html">Replace Array with Object</a>, <a href="http://refactoring.com/catalog/duplicateObservedData.html">Duplicate Observed Data</a>, <a href="http://refactoring.com/catalog/changeUnidirectionalAssociationToBidirectional.html">Change Unidirectional Association to Bidirectional</a>, <a href="http://refactoring.com/catalog/changeBidirectionalAssociationToUnidirectional.html">Change Bidirectional Association to Unidirectional</a>, <a href="http://refactoring.com/catalog/replaceMagicNumberWithSymbolicConstant.html">Replace Magic Number with Symbolic Constant</a>, <a href="http://refactoring.com/catalog/encapsulateField.html">Encapsulate Field</a>, <a href="http://refactoring.com/catalog/encapsulateCollection.html">Encapsulate Collection</a>, <a href="http://refactoring.com/catalog/replaceRecordWithDataClass.html">Replace Record with Data Class</a>, <a href="http://refactoring.com/catalog/replaceTypeCodeWithClass.html">Replace Type Code with Class</a>, <a href="http://refactoring.com/catalog/replaceTypeCodeWithSubclasses.html">Replace Type Code with Subclasses</a>, <a href="http://refactoring.com/catalog/replaceTypeCodeWithStateStrategy.html">Replace Type Code with State/Strategy</a>, <a href="http://refactoring.com/catalog/replaceTypeCodeWithModuleExtension.html">Replace Subclass with Fields</a>, <a href="http://refactoring.com/catalog/eagerlyInitializedAttribute.html">Eagerly Initialized Attribute</a>, <a href="http://refactoring.com/catalog/lazilyInitializedAttribute.html">Lazily Initialized Attribute</a>, <a href="http://refactoring.com/catalog/replaceHashWithObject.html">Replace Hash With Object</a>, <a href="http://refactoring.com/catalog/replaceSubclassWithFields.html">Replace Subclass With Fields</a>, <a href="http://refactoring.com/catalog/replaceTypeCodeWithPolymorphism.html">Replace Type Code With Polymorphism</a></p>
+
+<h2>Simplifying Conditional Expressions</h2>
+
+<p>Everyone I&#39;m sure has seen a pretty large and nasty conditional trees. This especially gets confusing when you not only find many if/else branches but the conditionals themselves are a mess of data that is hard to make sense of (<a href="http://refactoring.com/catalog/decomposeConditional.html">Decompose Conditional</a>---simply creating a readable method for those---is an easy answer to that.. a more specific version of <a href="http://refactoring.com/catalog/extractMethod.html">Extract Method</a>). This section gives some good principles and tips to help shorten and make clearer your conditionals. I particularly liked his idea of grouping and returning edge cases early <a href="http://refactoring.com/catalog/replaceNestedConditionalWithGuardClauses.html">Replace Nested Conditional with Guard Clauses</a>, and making more use of breaks (<a href="http://refactoring.com/catalog/removeControlFlag.html">Remove Control Flag</a>).</p>
+
+<p><a href="http://refactoring.com/catalog/decomposeConditional.html">Decompose Conditional</a>, <a href="http://refactoring.com/catalog/consolidateConditionalExpression.html">Consolidate Conditional Expression</a>, <a href="http://refactoring.com/catalog/consolidateDuplicateConditionalFragments.html">Consolidate Duplicate Conditional Fragments</a>, <a href="http://refactoring.com/catalog/removeControlFlag.html">Remove Control Flag</a>, <a href="http://refactoring.com/catalog/replaceNestedConditionalWithGuardClauses.html">Replace Nested Conditional with Guard Clauses</a>, <a href="http://refactoring.com/catalog/replaceConditionalWithPolymorphism.html">Replace Conditional with Polymorphism</a>, <a href="http://refactoring.com/catalog/introduceNullObject.html">Introduce Null Object</a>, <a href="http://refactoring.com/catalog/introduceAssertion.html">Introduce Assertion</a>, <a href="http://refactoring.com/catalog/recomposeConditional.html">Recompose Conditional</a></p>
+
+<h2>Making Method Calls Simpler</h2>
+
+<p>Deciding where things belong one thing, but deciding <em>how</em> to interact with it is another. This section deals with making interfaces more simple. Many of these have to do with parameters. One quick principle from this that I enjoyed is to strive to keep methods that have side affects separate from ones that return data (<a href="http://refactoring.com/catalog/separateQueryFromModifier.html">Separate Query from Modifier</a>). Another useful one was <a href="http://refactoring.com/catalog/introduceParameterObject.html">Introduce Parameter Object</a> where you create an object for multiple parameters, especially useful when you often see the same parameters passed around. As he advocates, more small methods are better than fewer larger methods. This can be done badly though, with endless and confusing delegation. But the key to avoid this is good naming. Renaming is one of the simplest and most important things you can do (and again, he notes, you won&#39;t get this right the first time).</p>
+
+<p><a href="http://refactoring.com/catalog/renameMethod.html">Rename Method</a>, <a href="http://refactoring.com/catalog/addParameter.html">Add Parameter</a>, <a href="http://refactoring.com/catalog/removeParameter.html">Remove Parameter</a>, <a href="http://refactoring.com/catalog/separateQueryFromModifier.html">Separate Query from Modifier</a>, <a href="http://refactoring.com/catalog/parameterizeMethod.html">Parameterize Method</a>, <a href="http://refactoring.com/catalog/replaceParameterWithExplicitMethods.html">Replace Parameter with Explicit Methods</a>, <a href="http://refactoring.com/catalog/preserveWholeObject.html">Preserve Whole Object</a>, <a href="http://refactoring.com/catalog/replaceParameterWithMethod.html">Replace Parameter with Method</a>, <a href="http://refactoring.com/catalog/introduceParameterObject.html">Introduce Parameter Object</a>, <a href="http://refactoring.com/catalog/removeSettingMethod.html">Remove Setting Method</a>, <a href="http://refactoring.com/catalog/hideMethod.html">Hide Method</a>, <a href="http://refactoring.com/catalog/replaceConstructorWithFactoryMethod.html">Replace Constructor with Factory Method</a>, <a href="http://refactoring.com/catalog/encapsulateDowncast.html">Encapsulate Downcast</a>, <a href="http://refactoring.com/catalog/replaceErrorCodeWithException.html">Replace Error Code with Exception</a>, <a href="http://refactoring.com/catalog/replaceExceptionWithTest.html">Replace Exception with Test</a>, <a href="http://refactoring.com/catalog/introduceExpressionBuilder.html">Introduce Expression Builder</a>, <a href="http://refactoring.com/catalog/introduceGateway.html">Introduce Gateway</a></p>
+
+<h2>Dealing With Generalizations</h2>
+
+<p>This section deals with moving things around within an objects hierarchy/inheritance. <a href="http://refactoring.com/catalog/extractInterface.html">Extract Interface</a> and <a href="http://refactoring.com/catalog/replaceInheritanceWithDelegation.html">Replace Inheritance with Delegation</a> are a couple of the more interesting and useful ones I found here.</p>
+
+<p><a href="http://refactoring.com/catalog/pullUpField.html">Pull Up Field</a>, <a href="http://refactoring.com/catalog/pullUpMethod.html">Pull Up Method</a>, <a href="http://refactoring.com/catalog/pullUpConstructorBody.html">Pull Up Constructor Body</a>, <a href="http://refactoring.com/catalog/pushDownMethod.html">Push Down Method</a>, <a href="http://refactoring.com/catalog/pushDownField.html">Push Down Field</a>, <a href="http://refactoring.com/catalog/extractSubclass.html">Extract Subclass</a>, <a href="http://refactoring.com/catalog/extractSuperclass.html">Extract Superclass</a>, <a href="http://refactoring.com/catalog/extractInterface.html">Extract Interface</a>, <a href="http://refactoring.com/catalog/collapseHierarchy.html">Collapse Hierarchy</a>, <a href="http://refactoring.com/catalog/formTemplateMethod.html">Form Template Method</a>, <a href="http://refactoring.com/catalog/replaceInheritanceWithDelegation.html">Replace Inheritance with Delegation</a>, <a href="http://refactoring.com/catalog/replaceDelegationWithInheritance.html">Replace Delegation with Inheritance</a>, <a href="http://refactoring.com/catalog/extractModule.html">Extract Module</a>, <a href="http://refactoring.com/catalog/inlineModule.html">Inline Module</a>, <a href="http://refactoring.com/catalog/replaceAbstractSuperclassWithModule.html">Replace Abstract Superclass With Module</a>, <a href="http://refactoring.com/catalog/replaceDelegationWithHierarchy.html">Replace Delegation With Hierarchy</a></p>
+
+<h2>Is it really that easy?</h2>
+
+<p>Kent Beck at the end notes that refactoring is not always as simple as this (they even dedicate a chapter to some common larger refactorings). He has seen refactorings done over months, or even years when things are more messy or complex. Often time there is a transition between where you are and where you want to be, and this can make things complicated, especially when different team members have different ideas of where things should be going. His solution to this is to be adamant about continual improvement, as well as getting everyone oriented around the same goal and aware that things are in transition. You may have an idea of where you want your code to be, and it may seem like a gigantic and daunting rats nest to drudge through before you get there. But there are a lot of small steps you can take now that you&#39;ll start seeing immediate benefits from. I&#39;ve been inspired, since reading this, to be more mindful of ways I can continually do this, and to see refactoring as an easy and safe way to really mold objects into what you want---the design or patterns you are looking for--and to get to, or even explore, where you want to go.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Refactoring Inspiration - Code Smells]]></title>
@@ -671,66 +724,6 @@ I decided to move my site from Rackspace to <a href="http://jekyllrb.com">Jekyll
 
 <p>
     Do you ever notice anything specific about websites that either attract and intrigue you, or frustrate and turn you away?</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[What in the world is RSS?]]></title>
-    <link href="http://bizzark.com/2010/03/03/what-in-the-world-is-rss.html"/>
-    <updated>2010-03-03T00:00:00Z</updated>
-    <id>http://bizzark.com/2010/03/03/what-in-the-world-is-rss</id>
-    <content type="html"><![CDATA[<div style="text-align:center; margin-top:-25px; margin-bottom:100px;">
-    <img alt="" src="/images/attachments/page_26/RSSheader.gif" style="width: 522px; height: 323px; " /></div>
-<h1>
-    Ever see those strange RSS boxes<br />
-    in your browser bar?</h1>
-<div style="float:left; margin-bottom:25px; margin-right:7px; text-align:center">
-    Firefox<br />
-    <img alt="RSS Firefox" src="/images/attachments/page_26/rssfirefox240.gif" style="border:1px solid #404141" /></div>
-<div style="float:left; margin-bottom:25px; margin-right:7px;text-align:center">
-    Safari<br />
-    <img alt="RSS Safari" src="/images/attachments/page_26/rsssafari240.gif" style="border:1px solid #404141" /></div>
-<div style="float:left; margin-bottom:25px; text-align:center">
-    Internet Explorer<br />
-    <img alt="RSS IE8" src="/images/attachments/page_26/rssie8240.gif" style="border:1px solid #404141" /></div>
-<p>
-    Or those bright orange RSS icons? Most probably don&#39;t notice them. If you&#39;ve ever clicked them you&#39;ll know that it takes you to a funky format of information. It looks pretty boring. This is an RSS feed.&nbsp;What is it? It&#39;s a standard format of information that makes it easy for computers to decode and understand. It stands for &quot;Really Simple Syndication,&quot; or &quot;Rich Site Summary.&quot; Typically you will find these on websites that have a lot of updates, especially blogs and news websites. What would you do with it?</p>
-<p>
-    <br />
-    <br />
-    &nbsp;</p>
-<h1>
-    Organized blog reading</h1>
-<p>
-    <img alt="" src="/images/attachments/page_26/googlreader370.jpg" style="margin-top: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 10px; float: right; width: 370px; height: 211px; " />For those who read more than a few blogs, a feed reader is a great way to keep up to date with your favorite blogs. They allow you to have view things like blogs in one location without going to the actual website. If you browse a lot websites, it would be pretty tedious to visit each site, much less remember them.&nbsp;I currently am subscribed to 117 blogs. I confess many of these I don&#39;t keep tabs on all the time. But keeping these organized through a reader helps me remember them, and browse through them at my convenience. &nbsp;There are a lot of online applications and software that allow you to organize and read blogs. I personally like, and would highly suggest&nbsp;<a href="http://www.google.com/reader/" target="_blank">Google Reader</a> because it is all stored online, and it is very easy to organize and use. Google Reader is set as my home page, and when I have free time I&#39;ll browse my subscriptions and find interesting articles to read (as well as do this in down time on my phone).</p>
-<p>
-    <br />
-    <br />
-    <img alt="" src="/images/attachments/page_26/NewspaperFeed256x256.png" style="margin-left: -75px; float: left; width: 256px; height: 256px; " /></p>
-<div style="float:left; width: 569px;">
-    <div>
-        <h1>
-            Read RSS and<br />
-            change your life</h1>
-        I say everyone really should read blogs. You could probably find a decent blog on virtually any topic. For myself I read mostly design, programming, and photography blogs, as well as blogs from friends and authors, and news. It helps me keep informed about what&#39;s going on in specific industries, peoples&#39; lives, get inspired, and it can even be a good way to communicate with others, via comments and responses. It&#39;s an invaluable resource for staying informed, inspired, and educated.</div>
-</div>
-
-<div>
-    <p>
-        <br />
-        &nbsp;</p>
-    <h2>
-        Have a favorite blog you subscribe to?</h2>
-    <p>
-        List a few of your favorite below<br />
-        &nbsp;</p>
-    <p>
-        Sign up for <a href="http://google.com/reader" target="_blank">Google Reader here</a>.<br />
-        Here is my <a href="/blog.xml" target="_blank">blog feed URL</a>, and <a href="/work.xml" target="_blank">work feed URL</a>.</p>
-</div>
-
-<div class="clearfix">
-    .</div>
 ]]></content>
   </entry>
   
